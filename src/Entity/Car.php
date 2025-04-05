@@ -42,9 +42,12 @@ class Car
     #[ORM\OneToMany(targetEntity: Carpooling::class, mappedBy: 'cars')]
     private Collection $carpoolings;
 
-    public function __construct()
+    public function __construct(?User $user = null)
     {
         $this->carpoolings = new ArrayCollection();
+        if ($user) {
+        $this->users = $user;
+        }
     }
 
     public function getId(): ?int
