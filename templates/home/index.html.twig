@@ -1,0 +1,59 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}ECORIDE{% endblock %}
+
+{% block body %}
+
+<div class="px-4 py-5 my-5 text-primary">
+    <h1 class="display-5 pb-4">Bienvenue sur ECORIDE <br>
+        votre plateforme de mobilité éco-responsable 🌿</h1>
+    <div class="col-lg-6 mx-auto pb-4">
+        <p class="lead mb-4">Chez ECORIDE, nous croyons en une mobilité plus 
+        respectueuse de l’environnement et accessible à tous. 
+        en expériences écoresponsables, simples et agréables. <br>
+        Notre mission est de transformer vos trajets du quotidien.</p>
+    </div>
+</div>
+
+<div class="container px-4 py-5" id="custom-cards">
+    <h2 class="pb-2 border-bottom">Pourquoi choisir ECORIDE ?</h2>
+
+    <div class="row row-cols-1 row-cols-lg-3 align-items-stretch g-4 py-5">
+        <div class="col">
+            <div class="card card-cover h-100 overflow-hidden text-bg-dark rounded-4 shadow-lg">
+                <div class="d-flex flex-column h-100 p-5 pb-3 text-white text-shadow-1">
+                <h3 class="pt-5 pb-5 mt-5 mb-4 display-6 lh-1 fw-bold">Réduisez votre empreinte carbone</h3>
+                <p class="lead mb-4">
+                    • Partagez vos trajets : Facilitez vos déplacements tout en réduisant votre empreinte carbone grâce au covoiturage intelligent. <br>
+                    • Explorez des itinéraires optimisés : Profitez de recommandations personnalisées pour vos trajets, conçues pour minimiser l’impact environnemental. <br>
+                    • Évaluez et échangez : Donnez votre avis, partagez vos expériences et construisez une communauté de voyageurs engagés..</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col">
+            <div class="card card-cover h-100 overflow-hidden text-bg-dark rounded-4 shadow-lg" style="background-image: url('unsplash-photo-2.jpg');">
+                <div class="d-flex flex-column h-100 p-5 pb-3 text-white text-shadow-1">
+                    <h3 class="pt-5 pb-5 mt-5 mb-4 display-6 lh-1 fw-bold">Notre engagement</h3>
+                    <p class="lead mb-4">
+                        🌍 Soutenir une mobilité durable : Chaque trajet partagé contribue à préserver notre planète. <br>
+                        🤝 Renforcer les liens humains : Créez des connexions en partageant vos trajets avec d’autres usagers. <br>
+                        🔒 Sécurité et fiabilité : Vos données et votre expérience sont notre priorité.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col">
+            <div class="card card-cover h-100 overflow-hidden text-bg-dark rounded-4 shadow-lg" style="background-image: url('unsplash-photo-3.jpg');">
+                <div class="d-flex flex-column h-100 p-5 pb-3 text-shadow-1">
+                <h3 class="pt-5 pb-5 mt-5 mb-4 display-6 lh-1 fw-bold">Rejoignez nous dès maintenant</h3>
+                <p>
+                    Ensemble, roulons vers un avenir plus vert et connectons-nous autrement. <br>
+                    Découvrez une nouvelle façon de voyager, où chaque kilomètre compte pour la planète.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
