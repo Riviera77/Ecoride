@@ -30,3 +30,5 @@
 ###> Docker ###
 docker/db/data/
 ###< Docker ###
+
+.DS_Store
