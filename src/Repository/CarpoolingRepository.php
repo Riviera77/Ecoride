@@ -15,7 +15,23 @@ class CarpoolingRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, Carpooling::class);
     }
+    /* _em => getEntityManager()*/
+    public function save(Carpooling $entity, bool $flush = false): void
+    {
+        $this->_em->persist($entity);
 
+        if ($flush) {
+            $this->_em->flush();
+        }
+    }
+    public function remove(Carpooling $entity, bool $flush = false): void
+    {
+        $this->_em->remove($entity);
+
+        if ($flush) {
+            $this->_em->flush();
+        }
+    }
     //    /**
     //     * @return Carpooling[] Returns an array of Carpooling objects
     //     */
