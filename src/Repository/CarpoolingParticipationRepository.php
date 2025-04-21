@@ -2,38 +2,22 @@
 
 namespace App\Repository;
 
-use App\Entity\Carpooling;
+use App\Entity\CarpoolingParticipation;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
- * @extends ServiceEntityRepository<Carpooling>
+ * @extends ServiceEntityRepository<CarpoolingParticipation>
  */
-class CarpoolingRepository extends ServiceEntityRepository
+class CarpoolingParticipationRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
-        parent::__construct($registry, Carpooling::class);
+        parent::__construct($registry, CarpoolingParticipation::class);
     }
-    /* _em => getEntityManager()*/
-    public function save(Carpooling $entity, bool $flush = false): void
-    {
-        $this->_em->persist($entity);
 
-        if ($flush) {
-            $this->_em->flush();
-        }
-    }
-    public function remove(Carpooling $entity, bool $flush = false): void
-    {
-        $this->_em->remove($entity);
-
-        if ($flush) {
-            $this->_em->flush();
-        }
-    }
     //    /**
-    //     * @return Carpooling[] Returns an array of Carpooling objects
+    //     * @return CarpoolingParticipation[] Returns an array of CarpoolingParticipation objects
     //     */
     //    public function findByExampleField($value): array
     //    {
@@ -47,7 +31,7 @@ class CarpoolingRepository extends ServiceEntityRepository
     //        ;
     //    }
 
-    //    public function findOneBySomeField($value): ?Carpooling
+    //    public function findOneBySomeField($value): ?CarpoolingParticipation
     //    {
     //        return $this->createQueryBuilder('c')
     //            ->andWhere('c.exampleField = :val')
