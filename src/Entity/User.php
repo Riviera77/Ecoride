@@ -38,8 +38,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(length: 50)]
     private ?string $username = null;
 
-    #[ORM\Column(type: Types::BLOB, nullable: true)]
-    private $photo = null;
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $photo = null;
 
     /**
      * @var Collection<int, Credit>
@@ -54,16 +54,23 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private Collection $cars;
 
     /**
+     * @var Collection<int, CarpoolingParticipation>
+     */
+    #[ORM\OneToMany(targetEntity: CarpoolingParticipation::class, mappedBy: 'users')]
+    private Collection $carpoolingParticipations;
+
+    /**
      * @var Collection<int, Carpooling>
      */
-    #[ORM\ManyToMany(targetEntity: Carpooling::class, mappedBy: 'users')]
-    private Collection $carpoolings;
+    /* #[ORM\ManyToMany(targetEntity: Carpooling::class, mappedBy: 'users')]
+    private Collection $carpoolings; */
 
     public function __construct()
     {
         $this->credits = new ArrayCollection();
         $this->cars = new ArrayCollection();
-        $this->carpoolings = new ArrayCollection();
+        /* $this->carpoolings = new ArrayCollection(); */
+        $this->carpoolingParticipations = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -158,7 +165,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->photo;
     }
 
-    public function setPhoto($photo): static
+    public function setPhoto(?string $photo): static
     {
         $this->photo = $photo;
 
@@ -228,12 +235,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     /**
      * @return Collection<int, Carpooling>
      */
-    public function getCarpoolings(): Collection
+    /* public function getCarpoolings(): Collection
     {
         return $this->carpoolings;
-    }
+    } */
 
-    public function addCarpooling(Carpooling $carpooling): static
+    /* public function addCarpooling(Carpooling $carpooling): static
     {
         if (!$this->carpoolings->contains($carpooling)) {
             $this->carpoolings->add($carpooling);
@@ -247,6 +254,36 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
         if ($this->carpoolings->removeElement($carpooling)) {
             $carpooling->removeUser($this);
+        }
+
+        return $this;
+    } */
+
+    /**
+     * @return Collection<int, CarpoolingParticipation>
+     */
+    public function getCarpoolingParticipations(): Collection
+    {
+        return $this->carpoolingParticipations;
+    }
+
+    public function addCarpoolingParticipation(CarpoolingParticipation $carpoolingParticipation): static
+    {
+        if (!$this->carpoolingParticipations->contains($carpoolingParticipation)) {
+            $this->carpoolingParticipations->add($carpoolingParticipation);
+            $carpoolingParticipation->setUsers($this);
+        }
+
+        return $this;
+    }
+
+    public function removeCarpoolingParticipation(CarpoolingParticipation $carpoolingParticipation): static
+    {
+        if ($this->carpoolingParticipations->removeElement($carpoolingParticipation)) {
+            // set the owning side to null (unless already changed)
+            if ($carpoolingParticipation->getUsers() === $this) {
+                $carpoolingParticipation->setUsers(null);
+            }
         }
 
         return $this;
