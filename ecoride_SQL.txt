@@ -47,10 +47,11 @@ CREATE TABLE Carpooling(
    FOREIGN KEY(Id_car) REFERENCES Car(Id_car)
 );
 
-CREATE TABLE user_carpooling(
-   Id_carpooling INTEGER,
-   Id_User_ INTEGER,
-   PRIMARY KEY(Id_carpooling, Id_User_),
-   FOREIGN KEY(Id_carpooling) REFERENCES Carpooling(Id_carpooling),
-   FOREIGN KEY(Id_User_) REFERENCES User_(Id_User_)
+CREATE TABLE carpooling_participation (
+    id SERIAL PRIMARY KEY,
+    user_id INT NOT NULL,
+    carpooling_id INT NOT NULL,
+    role VARCHAR(20) NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES user (id),
+    FOREIGN KEY (carpooling_id) REFERENCES carpooling (id)
 );
