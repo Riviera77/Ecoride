@@ -6,6 +6,7 @@ use App\Entity\Car;
 use App\Entity\User;
 use App\Entity\Credit;
 use App\Entity\Carpooling;
+use App\Entity\CarpoolingParticipation;
 use Doctrine\Persistence\ObjectManager;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 
@@ -22,7 +23,7 @@ class AppFixtures extends Fixture
         $user1->setPassword("vanessa13"); // password not hashed (juste for the tests)
         $user1->setRoles(["ROLE_USER"]);
         $user1->setUsername("Vanessa13");
-        $user1->setPhoto('public/uploads/user1.png');
+        $user1->setPhoto('user1.png');
         $manager->persist($user1);
 
         $user2 = new User();
@@ -30,7 +31,7 @@ class AppFixtures extends Fixture
         $user2->setPassword("carla17"); // password not hashed (juste for the tests)    
         $user2->setRoles(["ROLE_USER"]);
         $user2->setUsername("Carla17");
-        $user2->setPhoto('public/uploads/user2.png');
+        $user2->setPhoto('user2.png');
         $manager->persist($user2);
 
         $user3 = new User();
@@ -38,7 +39,7 @@ class AppFixtures extends Fixture
         $user3->setPassword("andre4125"); // password not hashed (juste for the tests)  
         $user3->setRoles(["ROLE_USER"]);
         $user3->setUsername("Andre4125");
-        $user3->setPhoto('public/uploads/user3.png');
+        $user3->setPhoto('user3.png');
         $manager->persist($user3);
         
         // --- Create a car ---
@@ -98,11 +99,11 @@ class AppFixtures extends Fixture
 
         $carpooling3 = new Carpooling($user3, $car3);
         $carpooling3->setDepartureAddress('Paris');
-        $carpooling3->setArrivalAddress('Rennes');
-        $carpooling3->setDepartureDate(new \DateTime('2025-12-01'));
-        $carpooling3->setArrivalDate(new \DateTime('2025-12-01'));
-        $carpooling3->setDepartureTime(new \DateTime('07:30:00'));
-        $carpooling3->setArrivalTime(new \DateTime('15:20:00'));
+        $carpooling3->setArrivalAddress('Marseille');
+        $carpooling3->setDepartureDate(new \DateTime('2026-01-01'));
+        $carpooling3->setArrivalDate(new \DateTime('2026-01-01'));
+        $carpooling3->setDepartureTime(new \DateTime('08:30:00'));
+        $carpooling3->setArrivalTime(new \DateTime('15:30:00'));
         $carpooling3->setPrice(80);
         $carpooling3->setNumberSeats(2);
         $carpooling3->setStatus('open');
@@ -119,6 +120,43 @@ class AppFixtures extends Fixture
         $credit2->setBalance(16);
         $credit2->setTransactionDate(new \DateTime('2025-11-01'));
         $manager->persist($credit2);
+
+        // --- Create participations (drivers + passengers) ---
+
+        // user1 is driver in carpooling1
+        $participation1 = new CarpoolingParticipation();
+        $participation1->setUsers($user1);
+        $participation1->setCarpooling($carpooling1);
+        $participation1->setRole('conducteur');
+        $manager->persist($participation1);
+
+        // user2 is passenger in carpooling1
+        $participation2 = new CarpoolingParticipation();
+        $participation2->setUsers($user2);
+        $participation2->setCarpooling($carpooling1);
+        $participation2->setRole('passager');
+        $manager->persist($participation2);
+
+        // user2 is driver in carpooling2
+        $participation3 = new CarpoolingParticipation();
+        $participation3->setUsers($user2);
+        $participation3->setCarpooling($carpooling2);
+        $participation3->setRole('conducteur');
+        $manager->persist($participation3);
+
+        // user3 is passenger in carpooling2
+        $participation4 = new CarpoolingParticipation();
+        $participation4->setUsers($user3);
+        $participation4->setCarpooling($carpooling2);
+        $participation4->setRole('passager');
+        $manager->persist($participation4);
+
+        // user3 is driver in carpooling3
+        $participation5 = new CarpoolingParticipation();
+        $participation5->setUsers($user3);
+        $participation5->setCarpooling($carpooling3);
+        $participation5->setRole('conducteur');
+        $manager->persist($participation5);
 
         // --- Save in the database ---
         $manager->flush();
