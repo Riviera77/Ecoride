@@ -69,6 +69,31 @@ class CarpoolingRepository extends ServiceEntityRepository
 
     return $qb->getQuery()->getResult();
 }
+
+    public function findSimilarRides(array $criteria): array
+{
+    $qb = $this->createQueryBuilder('c')
+        ->where('c.numberSeats > 0');
+
+    if (!empty($criteria['departureAddress'])) {
+        $qb->andWhere('c.departureAddress LIKE :departure')
+            ->setParameter('departure', '%' . $criteria['departureAddress'] . '%');
+    }
+
+    if (!empty($criteria['arrivalAddress'])) {
+        $qb->andWhere('c.arrivalAddress LIKE :arrival')
+            ->setParameter('arrival', '%' . $criteria['arrivalAddress'] . '%');
+    }
+
+    // Pas de filtre sur les dates pour les trajets similaires
+    return $qb->orderBy('c.departureDate', 'ASC')
+            ->setMaxResults(10) // optionnel : limite d'affichage
+            ->getQuery()
+            ->getResult();
+
+    return $qb->getQuery()->getResult();
+}
+
     //    public function findByExampleField($value): array
     //    {
     //        return $this->createQueryBuilder('c')
