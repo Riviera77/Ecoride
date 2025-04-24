@@ -24,10 +24,16 @@ final class CarpoolingController extends AbstractController
         $form->handleRequest($request);
 
         $carpoolings = [];
+        $suggestions = [];
 
         if ($form->isSubmitted() && $form->isValid() && !empty(array_filter($form->getData()))) {
             $criteria = $form->getData();
-            $carpoolings = $carpoolingRepository->findBySearchCriteria($criteria);            
+            $carpoolings = $carpoolingRepository->findBySearchCriteria($criteria);
+            
+            if (empty($carpoolings)) {
+                // Suggestion alternative : trajets le même jour sans le prix
+                $suggestions = $carpoolingRepository->findSimilarRides($criteria);
+            }            
         }
         else {
             // fallback : affiche tous les trajets avec places restantes sans critères de recherche
@@ -36,6 +42,7 @@ final class CarpoolingController extends AbstractController
             ->getQuery()
             ->getResult(); */
             $carpoolings = []; // Ne rien afficher par défaut
+            $suggestions = [];
         }
         /* // filter by search criteria otherwise show everything
         if (!empty($criteria)) {
@@ -47,6 +54,7 @@ final class CarpoolingController extends AbstractController
         return $this->render('carpooling/index.html.twig', [
             'form' => $form->createView(),
             'carpoolings' => $carpoolings,
+            'suggestions' => $suggestions,
         ]);
     }
 
