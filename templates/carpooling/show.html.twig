@@ -1,0 +1,62 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Carpooling{% endblock %}
+
+{% block body %}
+    <h1>Carpooling</h1>
+
+    <table class="table">
+        <tbody>
+            <tr>
+                <th>Id</th>
+                <td>{{ carpooling.id }}</td>
+            </tr>
+            <tr>
+                <th>DepartureAddress</th>
+                <td>{{ carpooling.departureAddress }}</td>
+            </tr>
+            <tr>
+                <th>ArrivalAddress</th>
+                <td>{{ carpooling.arrivalAddress }}</td>
+            </tr>
+            <tr>
+                <th>DepartureDate</th>
+                <td>{{ carpooling.departureDate ? carpooling.departureDate|date('Y-m-d') : '' }}</td>
+            </tr>
+            <tr>
+                <th>ArrivalDate</th>
+                <td>{{ carpooling.arrivalDate ? carpooling.arrivalDate|date('Y-m-d') : '' }}</td>
+            </tr>
+            <tr>
+                <th>DepartureTime</th>
+                <td>{{ carpooling.departureTime ? carpooling.departureTime|date('H:i:s') : '' }}</td>
+            </tr>
+            <tr>
+                <th>ArrivalTime</th>
+                <td>{{ carpooling.arrivalTime ? carpooling.arrivalTime|date('H:i:s') : '' }}</td>
+            </tr>
+            <tr>
+                <th>Price</th>
+                <td>{{ carpooling.price }}</td>
+            </tr>
+            <tr>
+                <th>NumberSeats</th>
+                <td>{{ carpooling.numberSeats }}</td>
+            </tr>
+            <tr>
+                <th>Preference</th>
+                <td>{{ carpooling.preference }}</td>
+            </tr>
+            <tr>
+                <th>Status</th>
+                <td>{{ carpooling.status }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_carpooling_index') }}">back to list</a>
+
+    <a href="{{ path('app_carpooling_edit', {'id': carpooling.id}) }}">edit</a>
+
+    {{ include('carpooling/_delete_form.html.twig') }}
+{% endblock %}

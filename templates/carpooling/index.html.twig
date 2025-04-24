@@ -1,37 +1,163 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}CarpoolingIndex{% endblock %}
+{% block title %}Carpooling index{% endblock %}
 
 {% block body %}
-
 <div class="px-4 py-5 my-5 text-primary">
     <h1 class="display-5 pb-4">Vous recherchez un covoiturage<br>
         Nous avons le trajet qu'il vous faut !</h1>
 </div>
 
-<div class="container px-4 py-5 my-5 text-center align-items-center rounded-3 border shadow-lg">   
-        <div class="p-3 p-lg-6 pt-lg-3">
-            <h2 class="pb-4 text-primary">La solution alternative de covoiturage</h2>
-            <div class="d-flex gap-2 d-md-flex justify-content-md-center mb-4 mb-lg-4">
-                <div class="row">
-                    <div class="col-lg-4 col-md-12 col-sm-12 mb-3">
-                        <label for="departureCityInput" class="form-label text-primary"><i class="bi bi-geo-alt"></i> Ville de départ</label>
-                        <input type="text" id="departureCityInput" class="form-control" placeholder="Ville de départ" aria-label="departure-city">
+<div class="container px-4 py-5 my-5 text-center align-items-center rounded-3 border shadow-lg">
+    <div class="p-3 p-lg-6 pt-lg-3">
+        <h2 class="pb-4 text-primary">La solution alternative de covoiturage</h2>
+
+        {{ form_start(form, {'attr': {'class': 'row g-3 justify-content-center'}, 'method': 'get'}) }}
+        {{ form_errors(form) }}
+
+        <div class="col-lg-4 col-md-12 col-sm-12 mb-3">
+            {# <label class="form-label text-primary"><i class="bi bi-geo-alt"></i> Ville de départ</label> #}
+            {# aucun risque d'injection en utilisant un emoji Unicode(chaine de texte brut), pas de HTML ou JS #}
+            {{ form_label(form.departureAddress, '📍 Ville de départ', {'label_attr': {'class': 'form-label text-primary'}}) }}
+            {{ form_widget(form.departureAddress, {'attr': {'class': 'form-control', 'placeholder': 'Ville de départ'}}) }}
+            {{ form_errors(form.departureAddress) }}
+        </div>
+        <div class="col-lg-4 col-md-12 col-sm-12 mb-3">
+            {# <label class="form-label text-primary"><i class="bi bi-geo-alt"></i> Ville d’arrivée</label> #}
+            {{ form_label(form.arrivalAddress, '📍 Ville d\'arrivée', {'label_attr': {'class': 'form-label text-primary'}}) }}
+            {{ form_widget(form.arrivalAddress, {'attr': {'class': 'form-control', 'placeholder': 'Ville d’arrivée'}}) }}
+            {{ form_errors(form.arrivalAddress) }}
+        </div>
+        <div class="col-lg-4 col-md-12 col-sm-12 mb-3">
+            {# <label class="form-label text-primary"><i class="bi bi-calendar2-date"></i> Date</label> #}
+            {{ form_label(form.departureDate, '📅 Date de départ', {'label_attr': {'class': 'form-label text-primary'}}) }}
+            {{ form_widget(form.departureDate, {'attr': {'class': 'form-control'}}) }}
+            {{ form_errors(form.departureDate) }}
+        </div>
+
+        {# Plage de prix #}
+        <div class="col-lg-2 col-md-6 col-sm-12 mb-3 text-primary">
+            {{ form_label(form.minPrice, 'Prix min (€)', {'label_attr': {'class': 'form-label text-primary'}}) }}
+            {{ form_widget(form.minPrice, {'attr': {'class': 'form-control'}}) }}
+            {{ form_errors(form.minPrice) }}
+        </div>
+        <div class="col-lg-2 col-md-6 col-sm-12 mb-3 text-primary">
+            {{ form_label(form.maxPrice, 'Prix max (€)', {'label_attr': {'class': 'form-label text-primary'}}) }}
+            {{ form_widget(form.maxPrice, {'attr': {'class': 'form-control'}}) }}
+            {{ form_errors(form.maxPrice) }}
+        </div>
+
+        <div class="d-flex gap-2 justify-content-md-center mb-4 mb-lg-3">
+            <button type="submit" class="btn btn-primary btn-lg px-4 me-md-6 fw-bold">
+                <i class="bi bi-search"></i> Rechercher
+            </button>
+        </div>
+
+        {{ form_end(form) }}
+
+        {# donne le nombre de covoiturages trouvés après avoir lancé la recherche #}
+        {% if app.request.query.all %}
+            <div class="text-center mt-4">
+                <h4 class="text-primary">{{ carpoolings|length }} covoiturage(s) trouvé(s)</h4>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+{# Résultats #}
+{# {% if carpoolings %}
+<div class="container">
+    <div class="row row-cols-1 row-cols-md-3 g-4">
+        {% for carpooling in carpoolings %}
+            <div class="col">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body">
+                        <h5 class="card-title text-primary">{{ carpooling.departureAddress }} → {{ carpooling.arrivalAddress }}</h5>
+                        <p class="card-text">
+                            <i class="bi bi-calendar2"></i> Départ : {{ carpooling.departureDate|date('d/m/Y') }}<br>
+                            <i class="bi bi-clock"></i> Heure : {{ carpooling.departureTime|date('H:i') }}<br>
+                            <i class="bi bi-people"></i> Places : {{ carpooling.numberSeats }}<br>
+                            <i class="bi bi-currency-euro"></i> Prix : {{ carpooling.price }}
+                        </p>
                     </div>
-                    <div class="col-lg-4 col-md-12 col-sm-12 mb-3">
-                        <label for="arrivalCityInput" class="form-label text-primary"><i class="bi bi-geo-alt"></i> Ville d'arrivée</label>
-                        <input type="text" id="arrivalCityInput" class="form-control" placeholder="Ville d'arrivée" aria-label="arrival-city">
-                    </div>
-                    <div class="col-lg-4 col-md-12 col-sm-12 mb-3">
-                        <label for="dateInput" class="form-label text-primary"><i class="bi bi-calendar2-date"></i> Date</label>
-                        <input type="date" id="dateInput" class="form-control" placeholder="Date" aria-label="date">
+                    <div class="card-footer text-center">
+                        <a href="{{ path('app_carpooling_show', {'id': carpooling.id}) }}" class="btn btn-outline-primary btn-sm">Détails</a>
+                        <a href="{{ path('app_carpooling_edit', {'id': carpooling.id}) }}" class="btn btn-outline-secondary btn-sm">Modifier</a>
                     </div>
                 </div>
             </div>
-            <div class="d-flex gap-2 justify-content-md-center mb-4 mb-lg-3">
-                <button type="button" href="{{url('carpooling_list')}}" role="search" class="btn btn-primary btn-lg px-4 me-md-6 fw-bold"><i class="bi bi-search"></i> Rechercher </button>
+        {% endfor %}
+    </div>
+</div>
+{% else %}
+    <p class="text-center text-danger mt-5">Aucun covoiturage trouvé.</p>
+{% endif %}
+
+<div class="text-end mt-5 me-5">
+    <a href="{{ path('app_carpooling_new') }}" class="btn btn-primary">
+        <i class="bi bi-plus-circle"></i> Créer un nouveau covoiturage
+    </a>
+</div> #}
+
+{# Bloc résultats – affiché uniquement après soumission du formulaire (via méthode GET) #}
+{% if app.request.query.all %}
+    {% if carpoolings|length %}
+        <div class="container">
+            <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+                {% for carpooling in carpoolings %}
+                    <div class="col">
+                        <div class="card card-cover h-100 overflow-hidden text-bg-dark shadow-lg">
+                            <div class="card-body text-center text-white shadow-1">
+                                <div class="d-flex justify-content-center align-items-center mb-3">
+                                    {% for carpoolingParticipations in carpooling.carpoolingParticipations|filter(p => p.role == 'conducteur') %}
+                                        <div>
+                                            <img src="{{ asset('uploads/users/' ~ carpoolingParticipations.users.photo) }}" alt="photo" width="100" height="100" class="rounded-circle mb-2">
+                                            <h5 class="card-title text-primary display-6 lead fw-bold">{{ carpoolingParticipations.users.username }}</h5>
+                                            <p class="text-primary">Note : 4,5/5</p>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+
+                                <p><i class="bi bi-people"></i> Max. {{ carpooling.numberSeats }}  à l'arrière</p>
+                                <p><i class="bi bi-ev-front"></i> Voyage écologique : <span></span></p>
+
+                                <p><i class="bi bi-calendar2-date"></i> Départ : {{ carpooling.departureDate ? (carpooling.departureDate|date('d/m/Y')) : 'Non précisée' }}</p>
+                                <p><i class="bi bi-calendar2-date"></i> Arrivée : {{ carpooling.arrivalDate ? (carpooling.arrivalDate|date('d/m/Y')) : 'Non précisée' }}</p>
+
+                                <p><i class="bi bi-clock"></i> Heure de départ : {{ carpooling.departureTime ? (carpooling.departureTime|date('H:i')) : 'Non précisée' }}</p>
+                                <p><i class="bi bi-stopwatch"></i> Durée : {{ carpooling.duration ?? 'Non précisée' }}</p>
+                                <p><i class="bi bi-clock-history"></i> Heure d'arrivée : {{ carpooling.arrivalTime ? (carpooling.arrivalTime|date('H:i')) : 'Non précisée' }}</p>
+
+                                <p><i class="bi bi-geo-alt"></i> Ville de départ : {{ carpooling.departureAddress }}</p>
+                                <p><i class="bi bi-geo-alt"></i> Ville d'arrivée : {{ carpooling.arrivalAddress }}</p>
+                                <p><strong>Prix : {{ carpooling.price }} €</strong></p>
+                            </div>
+                            <div class="card-footer text-center">
+                                <a href="{{ path('app_carpooling_show', {'id': carpooling.id}) }}" class="btn btn-outline-primary btn-sm">Détail</a>
+                                <a href="{{ path('app_carpooling_edit', {'id': carpooling.id}) }}" class="btn btn-outline-secondary btn-sm">Modifier</a>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
             </div>
         </div>
+    {% else %}
+        {#  <p class="text-danger text-center">Aucun covoiturage trouvé. Veuiller modifier la date de votre recherche</p> #}
+            <div class="alert alert-warning text-center">
+                <i class="bi bi-exclamation-triangle"></i> Aucun covoiturage ne correspond à votre recherche.<br> 
+                Veuiller modifier la date de votre recherche
+            </div>
+            <p class="text-muted text-center">Faites une recherche pour voir les résultats.</p>
+    {% endif %}
+{% else %}
+    <p class="text-muted text-center">Faites une recherche pour voir les résultats.</p>
+{% endif %}
+
+<div class="text-center mt-5 me-5 pb-2">
+    <a href="{{ path('app_carpooling_new') }}" class="btn btn-primary btn-lg">
+        <i class="bi bi-plus-circle"></i> Créer un nouveau covoiturage
+    </a>
 </div>
+
 
 {% endblock %}
