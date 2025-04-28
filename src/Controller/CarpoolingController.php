@@ -23,6 +23,12 @@ final class CarpoolingController extends AbstractController
         ]);
         $form->handleRequest($request);
 
+        /* $carpoolings = $carpoolingRepository->findAll();
+        foreach ($carpoolings as $carpooling) {
+        dump($carpooling->getCars());
+        }
+        die(); */
+
         $carpoolings = [];
         $suggestions = [];
 
@@ -62,6 +68,8 @@ final class CarpoolingController extends AbstractController
     public function new(Request $request, EntityManagerInterface $entityManager): Response
     {
         $carpooling = new Carpooling();
+        $carpooling->setUsers($this->getUser());
+        
         $form = $this->createForm(CarpoolingType::class, $carpooling);
         $form->handleRequest($request);
 

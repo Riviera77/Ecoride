@@ -43,7 +43,8 @@ class AppFixtures extends Fixture
         $manager->persist($user3);
         
         // --- Create a car ---
-        $car1 = new Car($user1);
+        $car1 = new Car();
+        $car1->setUsers($user1);
         $car1->setRegistration('1234ABCD');
         $car1->setDateFirstRegistration('2000-01-01');
         $car1->setModel('Clio');
@@ -52,16 +53,18 @@ class AppFixtures extends Fixture
         $car1->setEnergy(false);
         $manager->persist($car1);
 
-        $car2 = new Car($user2);
+        $car2 = new Car();
+        $car2->setUsers($user2);
         $car2->setRegistration('F58746CD');
         $car2->setDateFirstRegistration('2012-07-15');
         $car2->setModel('PROACE');
         $car2->setColor('noir');
         $car2->setMark('Toyota');
-        $car2->setEnergy(false);
+        $car2->setEnergy(true);
         $manager->persist($car2);
 
-        $car3 = new Car($user3);
+        $car3 = new Car();
+        $car3->setUsers($user3);
         $car3->setRegistration('D956GR56');
         $car3->setDateFirstRegistration('2022-01-01');
         $car3->setModel('E-208');
@@ -70,8 +73,10 @@ class AppFixtures extends Fixture
         $car3->setEnergy(true);
         $manager->persist($car3);
 
-        // --- Create a carpooling ---
-        $carpooling1 = new Carpooling($user1, $car1);
+        // --- Create carpoolings ---
+        $carpooling1 = new Carpooling();
+        $carpooling1->setUsers($user1);  // driver
+        $carpooling1->setCars($car1); // car
         $carpooling1->setDepartureAddress('Paris');
         $carpooling1->setArrivalAddress('Lyon');
         $carpooling1->setDepartureDate(new \DateTime('2025-12-01'));
@@ -80,11 +85,16 @@ class AppFixtures extends Fixture
         $carpooling1->setArrivalTime(new \DateTime('13:00:00'));
         $carpooling1->setPrice(50);
         $carpooling1->setNumberSeats(3);
-        $carpooling1->setStatus('open');
+        $carpooling1->setStatus('ouvert');
         $carpooling1->setPreference('non fumeur');
+        // Add passengers
+        $carpooling1->addPassenger($user2);  // user2 is passenger
+        $user2->addCarpoolingsAsPassenger($carpooling1);
         $manager->persist($carpooling1);
 
-        $carpooling2 = new Carpooling($user2, $car2);
+        $carpooling2 = new Carpooling();
+        $carpooling2->setUsers($user2);  // driver
+        $carpooling2->setCars($car2); // car
         $carpooling2->setDepartureAddress('Paris');
         $carpooling2->setArrivalAddress('Rennes');
         $carpooling2->setDepartureDate(new \DateTime('2025-12-01'));
@@ -93,11 +103,18 @@ class AppFixtures extends Fixture
         $carpooling2->setArrivalTime(new \DateTime('12:00:00'));
         $carpooling2->setPrice(30);
         $carpooling2->setNumberSeats(2);
-        $carpooling2->setStatus('open');
+        $carpooling2->setStatus('fermé');
         $carpooling2->setPreference('animaux acceptés');
+        // Add passengers
+        $carpooling2->addPassenger($user3);  // user3 is passenger
+        $user3->addCarpoolingsAsPassenger($carpooling2);
+        $carpooling2->addPassenger($user1);  // user1 is passenger
+        $user1->addCarpoolingsAsPassenger($carpooling2);
         $manager->persist($carpooling2);
 
-        $carpooling3 = new Carpooling($user3, $car3);
+        $carpooling3 = new Carpooling();
+        $carpooling3->setUsers($user3);  // driver
+        $carpooling3->setCars($car3); // car
         $carpooling3->setDepartureAddress('Paris');
         $carpooling3->setArrivalAddress('Marseille');
         $carpooling3->setDepartureDate(new \DateTime('2026-01-01'));
@@ -106,8 +123,11 @@ class AppFixtures extends Fixture
         $carpooling3->setArrivalTime(new \DateTime('15:30:00'));
         $carpooling3->setPrice(80);
         $carpooling3->setNumberSeats(2);
-        $carpooling3->setStatus('open');
+        $carpooling3->setStatus('ouvert');
         $carpooling3->setPreference('non fumeurs, animaux acceptés');
+        // Add passengers
+        $carpooling3->addPassenger($user1);  // user1 is passenger
+        $user1->addCarpoolingsAsPassenger($carpooling3);
         $manager->persist($carpooling3);
 
         // --- Create credits ---
@@ -121,42 +141,11 @@ class AppFixtures extends Fixture
         $credit2->setTransactionDate(new \DateTime('2025-11-01'));
         $manager->persist($credit2);
 
-        // --- Create participations (drivers + passengers) ---
+        $credit3 = new Credit($user3);
+        $credit3->setBalance(10);
+        $credit3->setTransactionDate(new \DateTime('2025-11-01'));
+        $manager->persist($credit3);
 
-        // user1 is driver in carpooling1
-        $participation1 = new CarpoolingParticipation();
-        $participation1->setUsers($user1);
-        $participation1->setCarpooling($carpooling1);
-        $participation1->setRole('conducteur');
-        $manager->persist($participation1);
-
-        // user2 is passenger in carpooling1
-        $participation2 = new CarpoolingParticipation();
-        $participation2->setUsers($user2);
-        $participation2->setCarpooling($carpooling1);
-        $participation2->setRole('passager');
-        $manager->persist($participation2);
-
-        // user2 is driver in carpooling2
-        $participation3 = new CarpoolingParticipation();
-        $participation3->setUsers($user2);
-        $participation3->setCarpooling($carpooling2);
-        $participation3->setRole('conducteur');
-        $manager->persist($participation3);
-
-        // user3 is passenger in carpooling2
-        $participation4 = new CarpoolingParticipation();
-        $participation4->setUsers($user3);
-        $participation4->setCarpooling($carpooling2);
-        $participation4->setRole('passager');
-        $manager->persist($participation4);
-
-        // user3 is driver in carpooling3
-        $participation5 = new CarpoolingParticipation();
-        $participation5->setUsers($user3);
-        $participation5->setCarpooling($carpooling3);
-        $participation5->setRole('conducteur');
-        $manager->persist($participation5);
 
         // --- Save in the database ---
         $manager->flush();
