@@ -1,5 +1,5 @@
 # Dockerfile
-# Utilisation de PHP 8.1 avec FPM et Alpine
+# Utilisation de PHP avec FPM et Alpine
 FROM php:8.3.20-fpm-alpine
 
 # Installation des dépendances système et PHP
