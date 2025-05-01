@@ -2,11 +2,12 @@
 
 namespace App\Entity;
 
-use App\Repository\CarpoolingRepository;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
+use App\Entity\Car;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use App\Repository\CarpoolingRepository;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\Common\Collections\ArrayCollection;
 
 #[ORM\Entity(repositoryClass: CarpoolingRepository::class)]
 class Carpooling
@@ -49,22 +50,46 @@ class Carpooling
     #[ORM\ManyToOne(inversedBy: 'carpoolings')]
     private ?Car $cars = null;
 
-    /**
-     * @var Collection<int, CarpoolingParticipation>
-     */
-    #[ORM\OneToMany(targetEntity: CarpoolingParticipation::class, mappedBy: 'carpooling')]
-    private Collection $carpoolingParticipations;
-
-    public function __construct()
-    {
-        $this->carpoolingParticipations = new ArrayCollection();
-    }
+    #[ORM\ManyToOne(inversedBy: 'carpoolingsAsDriver')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?User $users = null;
 
     /**
      * @var Collection<int, User>
      */
-    //#[ORM\ManyToMany(targetEntity: User::class, inversedBy: 'carpoolings')]
-    //private Collection $users;
+    #[ORM\ManyToMany(targetEntity: User::class, inversedBy: 'carpoolingsAsPassenger')]
+    #[ORM\JoinTable(name: 'carpooling_passengers')]
+    private Collection $passengers;
+
+    public function __construct()
+    {
+        $this->passengers = new ArrayCollection();
+    }
+
+    /**
+     * @var Collection<int, CarpoolingParticipation>
+     */
+    /* #[ORM\OneToMany(targetEntity: CarpoolingParticipation::class, mappedBy: 'carpooling')]
+    private Collection $carpoolingParticipations;
+
+    public function __construct(?User $user = null, ?Car $car = null)
+    {
+        $this->carpoolingParticipations = new ArrayCollection();
+
+        if ($user) {
+            $this->users = $user;
+        }
+
+        if ($car) {
+            $this->cars = $car;
+        }
+    } */
+
+    /**
+     * @var Collection<int, User>
+     */
+    /* #[ORM\ManyToMany(targetEntity: User::class, inversedBy: 'carpoolings')]
+    private Collection $users; */
 
     /* public function __construct()
     {
@@ -214,9 +239,9 @@ class Carpooling
     /* public function getUsers(): Collection
     {
         return $this->users;
-    } */
+    }
 
-    /* public function addUser(User $user): static
+    public function addUser(User $user): static
     {
         if (!$this->users->contains($user)) {
             $this->users->add($user);
@@ -264,7 +289,7 @@ class Carpooling
     /**
      * @return Collection<int, CarpoolingParticipation>
      */
-    public function getCarpoolingParticipations(): Collection
+    /* public function getCarpoolingParticipations(): Collection
     {
         return $this->carpoolingParticipations;
     }
@@ -287,6 +312,42 @@ class Carpooling
                 $carpoolingParticipation->setCarpooling(null);
             }
         }
+
+        return $this;
+    } */
+
+    public function getUsers(): ?User
+    {
+        return $this->users;
+    }
+
+    public function setUsers(?User $users): static
+    {
+        $this->users = $users;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, User>
+     */
+    public function getPassengers(): Collection
+    {
+        return $this->passengers;
+    }
+
+    public function addPassenger(User $passenger): static
+    {
+        if (!$this->passengers->contains($passenger)) {
+            $this->passengers->add($passenger);
+        }
+
+        return $this;
+    }
+
+    public function removePassenger(User $passenger): static
+    {
+        $this->passengers->removeElement($passenger);
 
         return $this;
     }

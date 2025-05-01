@@ -74,18 +74,32 @@
                         <div class="card card-cover h-100 overflow-hidden text-bg-dark shadow-lg">
                             <div class="card-body text-center text-white shadow-1">
                                 <div class="d-flex justify-content-center align-items-center mb-3">
-                                    {% for carpoolingParticipations in carpooling.carpoolingParticipations|filter(p => p.role == 'conducteur') %}
+                                    {% if carpooling.users %}
                                         <div>
-                                            <img src="{{ asset('uploads/users/' ~ carpoolingParticipations.users.photo) }}" alt="photo" width="100" height="100" class="rounded-circle mb-2">
-                                            <h5 class="card-title text-primary display-6 lead fw-bold">{{ carpoolingParticipations.users.username }}</h5>
+                                            <img src="{{ asset('uploads/users/' ~ carpooling.users.photo) }}" alt="photo" width="100" height="100" class="rounded-circle mb-2">
+                                            <h5 class="card-title text-primary display-6 lead fw-bold">{{ carpooling.users.username }}</h5>
                                             <p class="text-primary">Note : 4,5/5</p>
                                         </div>
-                                    {% endfor %}
+                                    {% endif %}
                                 </div>
 
-                                <p><i class="bi bi-people"></i> Max. {{ carpooling.numberSeats }}  à l'arrière</p>
-                                <p><i class="bi bi-ev-front"></i> Voyage écologique : <span></span></p>
+                                {# <p><i class="bi bi-people"></i> Max. {{ carpooling.numberSeats }}  à l'arrière</p> #}
+                                <p><i class="bi bi-people"></i> Places restantes : {{ carpooling.numberSeats - carpooling.passengers|length }} / {{ carpooling.numberSeats }}</p>
 
+                                {# <p>
+                                    {% if carpooling.cars %}
+                                        ✅ Voiture : {{ carpooling.cars.model }} — énergie : {{ carpooling.cars.energy ? '⚡ Oui' : '🔥 Non' }}
+                                    {% else %}
+                                        🚫 Pas de voiture liée
+                                    {% endif %}
+                                </p> #}
+                                <p><i class="bi bi-ev-front"></i> Voyage écologique :
+                                    {% if carpooling.cars and carpooling.cars.energy == true %}
+                                        ⚡ Oui
+                                    {% else %}
+                                        🔥 Non
+                                    {% endif %}
+                                </p>
                                 <p><i class="bi bi-calendar2-date"></i> Départ : {{ carpooling.departureDate ? (carpooling.departureDate|date('d/m/Y')) : 'Non précisée' }}</p>
                                 <p><i class="bi bi-calendar2-date"></i> Arrivée : {{ carpooling.arrivalDate ? (carpooling.arrivalDate|date('d/m/Y')) : 'Non précisée' }}</p>
 
@@ -119,17 +133,24 @@
                             <div class="card card-cover h-100 overflow-hidden text-bg-dark shadow-lg">
                                 <div class="card-body text-center text-white shadow-1">
                                     <div class="d-flex justify-content-center align-items-center mb-3">
-                                        {% for carpoolingParticipations in carpooling.carpoolingParticipations|filter(p => p.role == 'conducteur') %}
+                                        {% if carpooling.users  %}
                                             <div>
-                                                <img src="{{ asset('uploads/users/' ~ carpoolingParticipations.users.photo) }}" alt="photo" width="100" height="100" class="rounded-circle mb-2">
-                                                <h5 class="card-title text-primary display-6 lead fw-bold">{{ carpoolingParticipations.users.username }}</h5>
+                                                <img src="{{ asset('uploads/users/' ~ carpooling.users.photo) }}" alt="photo" width="100" height="100" class="rounded-circle mb-2">
+                                                <h5 class="card-title text-primary display-6 lead fw-bold">{{ carpooling.users.username }}</h5>
                                                 <p class="text-primary">Note : 4,5/5</p>
                                             </div>
-                                        {% endfor %}
+                                        {% endif %}
                                     </div>
 
-                                    <p><i class="bi bi-people"></i> Max. {{ carpooling.numberSeats }}  à l'arrière</p>
-                                    <p><i class="bi bi-ev-front"></i> Voyage écologique : <span></span></p>
+                                    {# <p><i class="bi bi-people"></i> Max. {{ carpooling.numberSeats }}  à l'arrière</p> #}
+                                    <p><i class="bi bi-people"></i> Places restantes : {{ carpooling.numberSeats - carpooling.passengers|length }} / {{ carpooling.numberSeats }}</p>
+                                    <p><i class="bi bi-ev-front"></i> Voyage écologique :
+                                    {% if carpooling.cars and carpooling.cars.energy == true %}
+                                        ⚡ Oui
+                                    {% else %}
+                                        🔥 Non
+                                    {% endif %}
+                                </p>
 
                                     <p><i class="bi bi-calendar2-date"></i> Départ : {{ carpooling.departureDate ? (carpooling.departureDate|date('d/m/Y')) : 'Non précisée' }}</p>
                                     <p><i class="bi bi-calendar2-date"></i> Arrivée : {{ carpooling.arrivalDate ? (carpooling.arrivalDate|date('d/m/Y')) : 'Non précisée' }}</p>

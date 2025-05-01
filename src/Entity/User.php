@@ -38,7 +38,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(length: 50)]
     private ?string $username = null;
 
-    #[ORM\Column(length: 255, nullable: true)]
+    #[ORM\Column(length: 50, nullable: true)]
     private ?string $photo = null;
 
     /**
@@ -54,23 +54,23 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private Collection $cars;
 
     /**
-     * @var Collection<int, CarpoolingParticipation>
+     * @var Collection<int, Carpooling>
      */
-    #[ORM\OneToMany(targetEntity: CarpoolingParticipation::class, mappedBy: 'users')]
-    private Collection $carpoolingParticipations;
+    #[ORM\OneToMany(targetEntity: Carpooling::class, mappedBy: 'users')]
+    private Collection $carpoolingsAsDriver;
 
     /**
      * @var Collection<int, Carpooling>
      */
-    /* #[ORM\ManyToMany(targetEntity: Carpooling::class, mappedBy: 'users')]
-    private Collection $carpoolings; */
+    #[ORM\OneToMany(targetEntity: Carpooling::class, mappedBy: 'passengers')]
+    private Collection $carpoolingsAsPassenger;
 
     public function __construct()
     {
         $this->credits = new ArrayCollection();
         $this->cars = new ArrayCollection();
-        /* $this->carpoolings = new ArrayCollection(); */
-        $this->carpoolingParticipations = new ArrayCollection();
+        $this->carpoolingsAsDriver = new ArrayCollection();
+        $this->carpoolingsAsPassenger = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -238,52 +238,76 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     /* public function getCarpoolings(): Collection
     {
         return $this->carpoolings;
-    } */
+    }
 
-    /* public function addCarpooling(Carpooling $carpooling): static
+    public function addCarpooling(Carpooling $carpooling): static
     {
         if (!$this->carpoolings->contains($carpooling)) {
-            $this->carpoolings->add($carpooling);
-            $carpooling->addUser($this);
-        }
+            $this->carpoolings->add($carpooling); */
+            /* $carpooling->addUser($this); */
+        /* }
 
         return $this;
     }
 
     public function removeCarpooling(Carpooling $carpooling): static
     {
-        if ($this->carpoolings->removeElement($carpooling)) {
-            $carpooling->removeUser($this);
-        }
+        if ($this->carpoolings->removeElement($carpooling)) { */
+            /* $carpooling->removeUser($this); */
+        /* }
 
         return $this;
     } */
 
     /**
-     * @return Collection<int, CarpoolingParticipation>
+     * @return Collection<int, Carpooling>
      */
-    public function getCarpoolingParticipations(): Collection
+    public function getCarpoolingsAsDriver(): Collection
     {
-        return $this->carpoolingParticipations;
+        return $this->carpoolingsAsDriver;
     }
 
-    public function addCarpoolingParticipation(CarpoolingParticipation $carpoolingParticipation): static
+    public function addCarpoolingsAsDriver(Carpooling $carpoolingsAsDriver): static
     {
-        if (!$this->carpoolingParticipations->contains($carpoolingParticipation)) {
-            $this->carpoolingParticipations->add($carpoolingParticipation);
-            $carpoolingParticipation->setUsers($this);
+        if (!$this->carpoolingsAsDriver->contains($carpoolingsAsDriver)) {
+            $this->carpoolingsAsDriver->add($carpoolingsAsDriver);
+            $carpoolingsAsDriver->setUsers($this);
         }
 
         return $this;
     }
 
-    public function removeCarpoolingParticipation(CarpoolingParticipation $carpoolingParticipation): static
+    public function removeCarpoolingsAsDriver(Carpooling $carpoolingsAsDriver): static
     {
-        if ($this->carpoolingParticipations->removeElement($carpoolingParticipation)) {
+        if ($this->carpoolingsAsDriver->removeElement($carpoolingsAsDriver)) {
             // set the owning side to null (unless already changed)
-            if ($carpoolingParticipation->getUsers() === $this) {
-                $carpoolingParticipation->setUsers(null);
+            if ($carpoolingsAsDriver->getUsers() === $this) {
+                $carpoolingsAsDriver->setUsers(null);
             }
+        }
+
+        return $this;
+    }
+
+    public function getCarpoolingsAsPassenger(): Collection
+    {
+        return $this->carpoolingsAsPassenger;
+    }
+
+    public function addCarpoolingsAsPassenger(Carpooling $carpooling): static
+    {
+        if (!$this->carpoolingsAsPassenger->contains($carpooling)) {
+            $this->carpoolingsAsPassenger->add($carpooling);
+            $carpooling->addPassenger($this);
+        }
+
+        return $this;
+    }
+
+    public function removeCarpoolingsAsPassenger(Carpooling $carpooling): static
+    {
+        if ($this->carpoolingsAsPassenger->removeElement($carpooling)) {
+            $carpooling->removePassenger($this);
         }
 
         return $this;
