@@ -66,24 +66,6 @@ class Carpooling
         $this->passengers = new ArrayCollection();
     }
 
-    /**
-     * @var Collection<int, CarpoolingParticipation>
-     */
-    /* #[ORM\OneToMany(targetEntity: CarpoolingParticipation::class, mappedBy: 'carpooling')]
-    private Collection $carpoolingParticipations;
-
-    public function __construct(?User $user = null, ?Car $car = null)
-    {
-        $this->carpoolingParticipations = new ArrayCollection();
-
-        if ($user) {
-            $this->users = $user;
-        }
-
-        if ($car) {
-            $this->cars = $car;
-        }
-    } */
 
     /**
      * @var Collection<int, User>
@@ -285,36 +267,6 @@ class Carpooling
         // 	%02dmin → les minutes, toujours sur 2 chiffres (ex : 05min)
         return sprintf('%dh %02dmin', $hours, $minutes);
     }
-
-    /**
-     * @return Collection<int, CarpoolingParticipation>
-     */
-    /* public function getCarpoolingParticipations(): Collection
-    {
-        return $this->carpoolingParticipations;
-    }
-
-    public function addCarpoolingParticipation(CarpoolingParticipation $carpoolingParticipation): static
-    {
-        if (!$this->carpoolingParticipations->contains($carpoolingParticipation)) {
-            $this->carpoolingParticipations->add($carpoolingParticipation);
-            $carpoolingParticipation->setCarpooling($this);
-        }
-
-        return $this;
-    }
-
-    public function removeCarpoolingParticipation(CarpoolingParticipation $carpoolingParticipation): static
-    {
-        if ($this->carpoolingParticipations->removeElement($carpoolingParticipation)) {
-            // set the owning side to null (unless already changed)
-            if ($carpoolingParticipation->getCarpooling() === $this) {
-                $carpoolingParticipation->setCarpooling(null);
-            }
-        }
-
-        return $this;
-    } */
 
     public function getUsers(): ?User
     {

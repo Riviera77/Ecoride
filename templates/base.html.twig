@@ -13,7 +13,8 @@
         {% block javascripts %}
             {% block importmap %}{{ importmap('app') }}{% endblock %}
             {% block javascript %}
-                <script src="{{ asset('js/bootstrap.min.js') }}"></script>
+                <script src="{{ asset('js/bootstrap.bundle.min.js') }}"></script>
+                <script src="{{ asset('js/app.js') }}"></script>
             {% endblock %}
         {% endblock %}
     </head>
