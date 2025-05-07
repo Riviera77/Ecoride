@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Carpooling;
 use App\Form\CarpoolingType;
 use App\Service\RatingService;
+use App\Form\CarpoolingFilterType;
 use App\Form\CarpoolingSearchType;
 use App\Repository\CarpoolingRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -17,7 +18,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 final class CarpoolingController extends AbstractController
 {
     #[Route('/', name: 'app_carpooling_index', methods: ['GET', 'POST'])]
-    public function index(Request $request, CarpoolingRepository $carpoolingRepository): Response
+    public function index(Request $request, CarpoolingRepository $carpoolingRepository, RatingService $ratingService): Response
     {
         $form = $this->createForm(CarpoolingSearchType::class, null, [
             'method' => 'GET',
@@ -51,15 +52,55 @@ final class CarpoolingController extends AbstractController
             $carpoolings = []; // Ne rien afficher par défaut
             $suggestions = [];
         }
-        /* // filter by search criteria otherwise show everything
-        if (!empty($criteria)) {
-            $carpoolings = $carpoolingRepository->findBy($criteria);
-        } else {
-            $carpoolings = $carpoolingRepository->findAll();
-        } */
+
+        // second search with filter form
+        $filterForm = null;
+
+        if (!empty($carpoolings)) {
+            $filterForm = $this->createForm(CarpoolingFilterType::class, null, [
+                'method' => 'GET'
+            ]);
+            $filterForm->handleRequest($request);
+
+            if ($filterForm->isSubmitted() && $filterForm->isValid()) {
+                $filterData = $filterForm->getData();
+
+                // Filter carpoolings already found
+                $carpoolings = array_filter($carpoolings, function ($carpooling) use ($filterData, $ratingService) {
+
+                    // Maximal duration
+                    if ($filterData['maxDuration']) {
+                        $duration = $carpooling->getDuration();
+                        if ($duration) {
+                            [$hours, $minutes] = sscanf($duration, '%dh %dmin');
+                            if ($hours > $filterData['maxDuration']) return false;
+                        }
+                    }
+
+                    // Ecological car
+                    if ($filterData['ecological'] && !$carpooling->getCars()->isEnergy()) {
+                        return false;
+                    }
+
+                    // Maximal price
+                    if ($filterData['maxPrice'] && $carpooling->getPrice() > $filterData['maxPrice']) {
+                        return false;
+                    }
+
+                    // Minimal rating
+                    if ($filterData['minRating']) {
+                        $average = $ratingService->getAverageRatingForDriver($carpooling->getUsers()->getId());
+                        if ($average < $filterData['minRating']) return false;
+                    }
+
+                    return true;
+                });
+            }
+        }
 
         return $this->render('carpooling/index.html.twig', [
             'form' => $form->createView(),
+            'filterForm' => $filterForm ? $filterForm->createView() : null,
             'carpoolings' => $carpoolings,
             'suggestions' => $suggestions,
         ]);
