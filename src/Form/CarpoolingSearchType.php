@@ -30,7 +30,7 @@ class CarpoolingSearchType extends AbstractType
                 'label' => 'Date de départ',
                 'required' => true,
             ])
-            ->add('minPrice', NumberType::class, [
+            /* ->add('minPrice', NumberType::class, [
                 'required' => false,
                 'label' => 'Prix min (€)',
                 'attr' => ['placeholder' => 'Prix min.']
@@ -39,13 +39,14 @@ class CarpoolingSearchType extends AbstractType
                 'required' => false,
                 'label' => 'Prix max (€)',
                 'attr' => ['placeholder' => 'Prix max.']
-            ]);
+            ]) */
+        ;
     }
 
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'csrf_protection' => false, // inutile ici car formulaire en GET
+            'csrf_protection' => false, // No need because Form in GET
         ]);
     }
 }

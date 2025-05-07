@@ -11,6 +11,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class CarpoolingType extends AbstractType
 {
+    /* Form for show the results of the search of the carpooling */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
@@ -32,10 +33,10 @@ class CarpoolingType extends AbstractType
             ->add('numberSeats')
             ->add('preference')
             ->add('status')
-            ->add('cars', EntityType::class, [
+            /* ->add('cars', EntityType::class, [
                 'class' => Car::class,
                 'choice_label' => 'id',
-            ])
+            ]) */
         ;
     }
 

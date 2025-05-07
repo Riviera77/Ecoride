@@ -57,7 +57,7 @@ class CarpoolingRepository extends ServiceEntityRepository
         ->setParameter('date', $criteria['departureDate']);
     }
 
-    if (!empty($criteria['minPrice'])) {
+    /* if (!empty($criteria['minPrice'])) {
         $qb->andWhere('c.price >= :minPrice')
         ->setParameter('minPrice', $criteria['minPrice']);
     }
@@ -65,7 +65,7 @@ class CarpoolingRepository extends ServiceEntityRepository
     if (!empty($criteria['maxPrice'])) {
         $qb->andWhere('c.price <= :maxPrice')
         ->setParameter('maxPrice', $criteria['maxPrice']);
-    }
+    } */
 
     return $qb->getQuery()->getResult();
 }
