@@ -3,8 +3,9 @@
 namespace App\Repository;
 
 use App\Entity\Carpooling;
-use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use App\Service\RatingService;
 use Doctrine\Persistence\ManagerRegistry;
+use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 
 /**
  * @extends ServiceEntityRepository<Carpooling>
@@ -36,7 +37,7 @@ class CarpoolingRepository extends ServiceEntityRepository
     //     * @return Carpooling[] Returns an array of Carpooling objects
     //     */
     public function findBySearchCriteria(array $criteria): array
-{
+    {
     // $qb = method of Doctrine to create a query builder 
     // to build request SQL dynamically
     $qb = $this->createQueryBuilder('c')
@@ -68,10 +69,70 @@ class CarpoolingRepository extends ServiceEntityRepository
     } */
 
     return $qb->getQuery()->getResult();
-}
+    }
+
+
+    public function findBySearchAndFilterCriteria(array $criteria, RatingService $ratingService): array
+    {
+        
+        $qb = $this->createQueryBuilder('c')
+            ->leftJoin('c.cars', 'car')
+            ->addSelect('car')
+            ->where('c.numberSeats > 0');
+
+        if (!empty($criteria['departureAddress'])) {
+            $qb->andWhere('c.departureAddress LIKE :departure')
+                ->setParameter('departure', '%' . $criteria['departureAddress'] . '%');
+        }
+
+        if (!empty($criteria['arrivalAddress'])) {
+            $qb->andWhere('c.arrivalAddress LIKE :arrival')
+                ->setParameter('arrival', '%' . $criteria['arrivalAddress'] . '%');
+        }
+
+        if (!empty($criteria['departureDate'])) {
+            $qb->andWhere('c.departureDate = :date')
+                ->setParameter('date', $criteria['departureDate']);
+        }
+
+        if (!empty($criteria['maxPrice'])) {
+            $qb->andWhere('c.price <= :maxPrice')
+                ->setParameter('maxPrice', $criteria['maxPrice']);
+        }
+
+        if (!empty($criteria['ecological'])) {
+        $qb->andWhere('car.energy = true');
+        }
+
+        $carpoolings = $qb->getQuery()->getResult();
+
+        if (!empty($criteria['minRating'])) {
+            $carpoolings = array_filter($carpoolings, function ($carpooling) use ($ratingService, $criteria) {
+                $user = $carpooling->getUsers();
+                return $user && $ratingService->getAverageRatingForDriver($user->getId()) >= $criteria['minRating'];
+            });
+        }
+
+        if (!empty($criteria['maxDuration'])) {
+            $carpoolings = array_filter($carpoolings, function ($carpooling) use ($criteria) {
+                $duration = $carpooling->getDuration();
+                if (!$duration) return true;
+
+                if (preg_match('/(?:(\\d+)h)?\\s*(?:(\\d+)min)?/', $duration, $matches)) {
+                    $hours = isset($matches[1]) ? (int)$matches[1] : 0;
+                    return $hours <= $criteria['maxDuration'];
+                }
+
+                return true;
+            });
+        }
+
+        return $carpoolings;
+    }
+
 
     public function findSimilarRides(array $criteria): array
-{
+    {
     $qb = $this->createQueryBuilder('c')
         ->where('c.numberSeats > 0');
 
@@ -92,7 +153,7 @@ class CarpoolingRepository extends ServiceEntityRepository
             ->getResult();
 
     return $qb->getQuery()->getResult();
-}
+    }
 
     //    public function findByExampleField($value): array
     //    {

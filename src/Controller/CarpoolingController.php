@@ -12,6 +12,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 #[Route('/carpooling')]
@@ -25,85 +26,83 @@ final class CarpoolingController extends AbstractController
         ]);
         $form->handleRequest($request);
 
-        /* $carpoolings = $carpoolingRepository->findAll();
-        foreach ($carpoolings as $carpooling) {
-        dump($carpooling->getCars());
-        }
-        die(); */
-
+        // Always recover the search parameters from the query string GET:
+        /* $searchParams = $request->query->get('carpooling_search') ?? []; // return array with key or array empty */
         $carpoolings = [];
         $suggestions = [];
 
+        //1- First search for carpoolings if the form is submitted 
         if ($form->isSubmitted() && $form->isValid() && !empty(array_filter($form->getData()))) {
             $criteria = $form->getData();
             $carpoolings = $carpoolingRepository->findBySearchCriteria($criteria);
-            
+            /* $searchParams = $criteria; // save criteria for the next filter form */
+
             if (empty($carpoolings)) {
-                // Suggestion alternative : trajets le même jour sans le prix
+                // alternative Suggestion  : carpooling the same day without the price
                 $suggestions = $carpoolingRepository->findSimilarRides($criteria);
             }            
         }
-        else {
-            // fallback : affiche tous les trajets avec places restantes sans critères de recherche
-            /* $carpoolings = $carpoolingRepository->createQueryBuilder('c')
-            ->where('c.numberSeats > 0')
-            ->getQuery()
-            ->getResult(); */
-            $carpoolings = []; // Ne rien afficher par défaut
-            $suggestions = [];
-        }
 
-        // second search with filter form
+        /* dd('Request GET', $request->query->all());
+        dd('Carpoolings (avant le if)', $carpoolings); */
+
+        // 2- if filter form is submitted without carpoolings found, relaunch the first search
+        /* if ($request->query->has('carpooling_filter') && empty($carpoolings) && !empty($searchParams)) {
+            $carpoolings = $carpoolingRepository->findBySearchCriteria($searchParams);
+            dd('Carpoolings rechargés depuis search (car filtre soumis)', $carpoolings);
+        } */
+        
+        // 2- prepare form filter if filter form is submitted with carpoolings found
         $filterForm = null;
 
         if (!empty($carpoolings)) {
             $filterForm = $this->createForm(CarpoolingFilterType::class, null, [
                 'method' => 'GET'
             ]);
+
             $filterForm->handleRequest($request);
+            dump($request->query->all());
+            /* dd('filterForm soumis ?', $filterForm->isSubmitted()); */
 
             if ($filterForm->isSubmitted() && $filterForm->isValid()) {
                 $filterData = $filterForm->getData();
+                dump('filterData', $filterData);
 
-                // Filter carpoolings already found
-                $carpoolings = array_filter($carpoolings, function ($carpooling) use ($filterData, $ratingService) {
+                // recover data from the first form (GET)
+                $searchData = $request->query->all('carpooling_search') ?? [];
 
-                    // Maximal duration
-                    if ($filterData['maxDuration']) {
-                        $duration = $carpooling->getDuration();
-                        if ($duration) {
-                            [$hours, $minutes] = sscanf($duration, '%dh %dmin');
-                            if ($hours > $filterData['maxDuration']) return false;
-                        }
-                    }
+                // merge data from the first form and the filter form
+                $mergedCriteria = array_merge($searchData, $filterData);
+                dump('Merged criteria', $mergedCriteria);
 
-                    // Ecological car
-                    if ($filterData['ecological'] && !$carpooling->getCars()->isEnergy()) {
-                        return false;
-                    }
-
-                    // Maximal price
-                    if ($filterData['maxPrice'] && $carpooling->getPrice() > $filterData['maxPrice']) {
-                        return false;
-                    }
-
-                    // Minimal rating
-                    if ($filterData['minRating']) {
-                        $average = $ratingService->getAverageRatingForDriver($carpooling->getUsers()->getId());
-                        if ($average < $filterData['minRating']) return false;
-                    }
-
-                    return true;
-                });
+                // unique launch with the first search with the merged criteria
+                $carpoolings = $carpoolingRepository->findBySearchAndFilterCriteria($mergedCriteria, $ratingService);
+                
             }
         }
+
+        // 3- build the query string to keep criteria search
+                /* if (!is_array($searchParams)) {
+                    $searchParams = []; // Sécurité : éviter une erreur si c'est null
+                }
+                $queryString = http_build_query(['carpooling_search' => $searchParams]);
+                dump('Query string envoyée au Twig :', $queryString);
+                */
+                /* $searchParams = $request->query->get('carpooling_search') ?? [];
+                $queryString = http_build_query(['carpooling_search' => $searchParams]); */
+                /* $filterFormAction = $this->generateUrl('app_carpooling_index', ['carpooling_search' => $searchData], UrlGeneratorInterface::ABSOLUTE_PATH); */
+                $searchData = $request->query->all('carpooling_search') ?? [];
+                $queryString = http_build_query($request->query->all());
+                $filterFormAction = $this->generateUrl('app_carpooling_index') . '?' . $queryString;
 
         return $this->render('carpooling/index.html.twig', [
             'form' => $form->createView(),
             'filterForm' => $filterForm ? $filterForm->createView() : null,
             'carpoolings' => $carpoolings,
             'suggestions' => $suggestions,
-        ]);
+            'filterFormAction' => $filterFormAction,
+            /* 'queryString' => $queryString, */
+        ]); 
     }
 
     #[Route('/new', name: 'app_carpooling_new', methods: ['GET', 'POST'])]

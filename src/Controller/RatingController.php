@@ -32,10 +32,10 @@ class RatingController extends AbstractController
     #[Route('/driver/{id}/ratings', name: 'app_driver_ratings')]
     public function showRatings(int $id): Response
     {
-        // Récupérer la moyenne des notes
+        // Recover average rating 
         $averageRating = $this->ratingService->getAverageRatingForDriver($id);
 
-        // Récupérer les commentaires
+        // Recover comments 
         $comments = $this->ratingService->getCommentsForDriver($id);
 
         return $this->render('rating/show.html.twig', [
