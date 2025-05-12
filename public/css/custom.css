@@ -104,6 +104,7 @@ body {
     height: 100px;
 }
 
+
 .card-title {
     color: var(--primary);
 }
@@ -151,17 +152,20 @@ a {
     color: var(--primary);
 }
 
-form i {
+label {
     color: var(--primary);
+    font-weight: bold;
+    text-align: left;
+    display: block;
 }
 
 .form-signin {
-    max-width: 430px;
+    /* max-width: 430px; */
     padding: 1rem;
 }
 
 .form-listing {
-    max-width: 700px;
+    /* max-width: 700px; */
     padding: 1rem;
 }
 

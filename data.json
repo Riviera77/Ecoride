@@ -1,0 +1,23 @@
+[
+    {
+        "driverId": "7",
+        "carpoolingId": "5",
+        "rating": 4.5,
+        "comment": "Très bonne conductrice, trajet agréable.",
+        "createdAt": "2025-12-02T10:00:00Z"
+    },
+    {
+        "driverId": "8",
+        "carpoolingId": "6",
+        "rating": 5,
+        "comment": "parfait!, à refaire",
+        "createdAt": "2025-12-02T15:00:00Z"
+    },
+    {
+        "driverId": "9",
+        "carpoolingId": "7",
+        "rating": 4.5,
+        "comment": "Très bon conducteur, trajet agréable.",
+        "createdAt": "2026-01-02T10:00:00Z"
+    }
+]

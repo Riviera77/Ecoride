@@ -1,0 +1,130 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Carpooling{% endblock %}
+
+{% block body %}
+    <div class="container my-5">
+
+        <h1 class="mb-4">Détail du covoiturage</h1>
+
+        <div class="card mb-4 overflow-hidden text-bg-dark shadow-lg">
+            <div class="card-body">
+
+                <div class="d-flex align-items-center">
+                    <img src="{{ asset('uploads/users/' ~ carpooling.users.photo) }}" alt="photo" width="100" height="100" class="rounded-circle me-3">
+                    <div>
+                        <h3>{{ carpooling.users.username }}</h3>
+                        <p>Note moyenne : 
+                            {% if averageRating > 0 %}
+                                ⭐ {{ averageRating }}/5
+                            {% else %}
+                                Pas encore noté
+                            {% endif %}
+                        </p>
+                    </div>
+                </div>
+
+                <hr>
+
+                <p><strong>Ville de départ :</strong> {{ carpooling.departureAddress }}</p>
+                <p><strong>Ville d'arrivée :</strong> {{ carpooling.arrivalAddress }}</p>
+                <p><strong>Date de départ :</strong> {{ carpooling.departureDate ? carpooling.departureDate|date('Y-m-d') : '' }}</p>
+                <p><strong>Date d'arrivée :</strong>{{ carpooling.arrivalDate ? carpooling.arrivalDate|date('Y-m-d') : '' }}</p>
+                
+                <p><strong>Heure de départ :</strong> {{ carpooling.departureTime ? carpooling.departureTime|date('H:i:s') : '' }}</p>
+                <p><strong>Heure d'arrivée :</strong> {{ carpooling.arrivalTime ? carpooling.arrivalTime|date('H:i:s') : '' }}</p>
+                <p><strong>Durée estimée :</strong> {{ carpooling.duration ?? 'Non précisée' }}</p>
+                <p><strong>Prix :</strong> {{ carpooling.price }} €</p>
+                <p><strong>Nombre de places restantes :</strong> {{ carpooling.numberSeats - carpooling.passengers|length }}</p>
+                <p><strong>Préférences :</strong> {{ carpooling.preference ?? 'Aucune' }}</p>
+                <p><strong>Statut :</strong> {{ carpooling.status }}</p>
+
+                <hr>
+
+                <h4>Véhicule</h4>
+                {% if carpooling.cars %}
+                    <p><strong>Modèle :</strong> {{ carpooling.cars.model }}</p>
+                    <p><strong>Marque :</strong> {{ carpooling.cars.mark }}</p>
+                    <p><strong>Énergie :</strong> {{ carpooling.cars.energy ? '⚡ Électrique' : 'Essence/Diesel' }}</p>
+                {% else %}
+                    <p>Pas de véhicule renseigné</p>
+                {% endif %}
+
+                <hr>
+
+                <h4>Commentaires des passagers</h4>
+                {% if comments is not empty %}
+                    <ul>
+                        {% for comment in comments %}
+                            <li>💬 {{ comment.comment }}</li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <p>Aucun commentaire pour ce conducteur.</p>
+                {% endif %}
+
+            </div>
+        </div>
+
+        <a href="{{ path('app_carpooling_index') }}" class="btn btn-primary">Retour à la liste des covoiturages</a>
+
+        <a href="{{ path('app_carpooling_edit', {'id': carpooling.id}) }}" class="btn btn-primary">Modifier</a>
+    </div>
+
+
+
+    {# <table class="table">
+        <tbody>
+            <tr>
+                <th>Id</th>
+                <td>{{ carpooling.id }}</td>
+            </tr>
+            <tr>
+                <th>DepartureAddress</th>
+                <td>{{ carpooling.departureAddress }}</td>
+            </tr>
+            <tr>
+                <th>ArrivalAddress</th>
+                <td>{{ carpooling.arrivalAddress }}</td>
+            </tr>
+            <tr>
+                <th>DepartureDate</th>
+                <td>{{ carpooling.departureDate ? carpooling.departureDate|date('Y-m-d') : '' }}</td>
+            </tr>
+            <tr>
+                <th>ArrivalDate</th>
+                <td>{{ carpooling.arrivalDate ? carpooling.arrivalDate|date('Y-m-d') : '' }}</td>
+            </tr>
+            <tr>
+                <th>DepartureTime</th>
+                <td>{{ carpooling.departureTime ? carpooling.departureTime|date('H:i:s') : '' }}</td>
+            </tr>
+            <tr>
+                <th>ArrivalTime</th>
+                <td>{{ carpooling.arrivalTime ? carpooling.arrivalTime|date('H:i:s') : '' }}</td>
+            </tr>
+            <tr>
+                <th>Price</th>
+                <td>{{ carpooling.price }}</td>
+            </tr>
+            <tr>
+                <th>NumberSeats</th>
+                <td>{{ carpooling.numberSeats }}</td>
+            </tr>
+            <tr>
+                <th>Preference</th>
+                <td>{{ carpooling.preference }}</td>
+            </tr>
+            <tr>
+                <th>Status</th>
+                <td>{{ carpooling.status }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_carpooling_index') }}">back to list</a>
+
+    <a href="{{ path('app_carpooling_edit', {'id': carpooling.id}) }}">edit</a> #}
+
+    {{ include('carpooling/_delete_form.html.twig') }}
+{% endblock %}

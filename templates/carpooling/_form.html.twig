@@ -1,0 +1,72 @@
+{# {{ form_start(form) }}
+    {{ form_widget(form) }}
+    <button class="btn btn-primary">{{ button_label|default('Save') }}</button>
+{{ form_end(form) }} #}
+
+{{ form_start(form) }}
+    <div class="container">
+        <div class="mb-3">
+        {{ form_label(form.departureAddress, 'Ville de départ') }}
+        {{ form_widget(form.departureAddress, {'attr': {'class': 'form-control'}}) }}
+        {{ form_errors(form.departureAddress) }}
+        </div>
+
+        <div class="mb-3">
+            {{ form_label(form.arrivalAddress, 'Ville d\'arrivée') }}
+            {{ form_widget(form.arrivalAddress, {'attr': {'class': 'form-control'}}) }}
+            {{ form_errors(form.arrivalAddress) }}
+        </div>
+
+        <div class="mb-3">
+            {{ form_label(form.departureDate, 'Date de départ') }}
+            {{ form_widget(form.departureDate, {'attr': {'class': 'form-control'}}) }}
+            {{ form_errors(form.departureDate) }}
+        </div>
+
+        <div class="mb-3">
+            {{ form_label(form.arrivalDate, 'Date d\'arrivée') }}
+            {{ form_widget(form.arrivalDate, {'attr': {'class': 'form-control'}}) }}
+            {{ form_errors(form.arrivalDate) }}
+        </div>
+
+        <div class="mb-3">
+            {{ form_label(form.departureTime, 'Heure de départ') }}
+            {{ form_widget(form.departureTime, {'attr': {'class': 'form-control'}}) }}
+            {{ form_errors(form.departureTime) }}
+        </div>
+
+        <div class="mb-3">
+            {{ form_label(form.arrivalTime, 'Heure d\'arrivée') }}
+            {{ form_widget(form.arrivalTime, {'attr': {'class': 'form-control'}}) }}
+            {{ form_errors(form.arrivalTime) }}
+        </div>
+
+        <div class="mb-3">
+            {{ form_label(form.price, 'Prix') }}
+            {{ form_widget(form.price, {'attr': {'class': 'form-control'}}) }}
+            {{ form_errors(form.price) }}
+        </div>
+
+        <div class="mb-3">
+            {{ form_label(form.numberSeats) }}
+            {{ form_widget(form.numberSeats, {'attr': {'class': 'form-control'}}) }}
+            {{ form_errors(form.numberSeats) }}
+        </div>
+
+        <div class="mb-3">
+            {{ form_label(form.preference) }}
+            {{ form_widget(form.preference, {'attr': {'class': 'form-control'}}) }}
+            {{ form_errors(form.preference) }}
+        </div>
+
+        <div class="mb-3">
+            {{ form_label(form.status) }}
+            {{ form_widget(form.status, {'attr': {'class': 'form-control'}}) }}
+            {{ form_errors(form.status) }}
+        </div>
+    </div>
+    
+
+    <button class="btn btn-primary">{{ button_label|default('Enregistrer') }}</button>
+
+{{ form_end(form) }}
