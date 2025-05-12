@@ -8,12 +8,16 @@
         Nous avons le trajet qu'il vous faut !</h1>
 </div>
 
-{# Formulaire de recherche #}
+{# search form #}
 <div class="container px-4 py-5 my-5 text-center align-items-center rounded-3 border shadow-lg">
     <div class="p-3 p-lg-6 pt-lg-3">
         <h2 class="pb-4 text-primary">La solution alternative de covoiturage</h2>
 
-        {{ form_start(form, {'attr': {'class': 'row g-3 justify-content-center'}, 'method': 'get'}) }}
+        {{ form_start(form, {
+            'attr': {'class': 'row g-3 justify-content-center'}, 
+            'method': 'get',
+            'action': path('app_carpooling_index'),
+        }) }}
         {{ form_errors(form) }}
 
         <div class="col-lg-4 col-md-12 col-sm-12 mb-3">
@@ -36,26 +40,15 @@
             {{ form_errors(form.departureDate) }}
         </div>
 
-        {# Plage de prix #}
-        <div class="col-lg-2 col-md-6 col-sm-12 mb-3 text-primary">
-            {{ form_label(form.minPrice, 'Prix min (€)', {'label_attr': {'class': 'form-label text-primary'}}) }}
-            {{ form_widget(form.minPrice, {'attr': {'class': 'form-control'}}) }}
-            {{ form_errors(form.minPrice) }}
-        </div>
-        <div class="col-lg-2 col-md-6 col-sm-12 mb-3 text-primary">
-            {{ form_label(form.maxPrice, 'Prix max (€)', {'label_attr': {'class': 'form-label text-primary'}}) }}
-            {{ form_widget(form.maxPrice, {'attr': {'class': 'form-control'}}) }}
-            {{ form_errors(form.maxPrice) }}
-        </div>
-
         <div class="d-flex gap-2 justify-content-md-center mb-4 mb-lg-3">
             <button type="submit" class="btn btn-primary btn-lg px-4 me-md-6 fw-bold">
                 <i class="bi bi-search"></i> Rechercher
             </button>
         </div>
+        {{ form_rest(form) }}
         {{ form_end(form) }}
 
-        {# donne le nombre de covoiturages trouvés après avoir lancé la recherche #}
+        {# show the number of carpoolings found after the search #}
         {% if app.request.query.all %}
             <div class="text-center mt-4">
                 <h4 class="text-primary">{{ carpoolings|length }} covoiturage(s) trouvé(s)</h4>
@@ -64,7 +57,49 @@
     </div>
 </div>
 
-{# Bloc résultats – affiché uniquement après soumission du formulaire (via méthode GET) #}
+{# FILTER FORM only showed after CarpoolingSearchType form with results #}
+    {% if carpoolings|length > 0 and filterForm %}
+    <div class="container px-4 py-5 my-5 p-3 text-center align-items-center rounded-3 border shadow-lg">
+        <h3>Filtrer les résultats</h3>
+
+        {% if filterForm is defined %}
+            {{ dump(filterForm.vars.data) }}
+        {% endif %}
+
+        {{ form_start(filterForm, {
+            'attr': {'class': 'row g-3 p-3 align-items-end'},
+            'method': 'get',
+            'action': filterFormAction,
+            }) }}
+            <div class="col-md-3">
+                {{ form_label(filterForm.maxDuration) }}
+                {{ form_widget(filterForm.maxDuration, {'attr': {'class': 'form-control'}}) }}
+            </div>
+            <div class="col-md-3">
+                {{ form_label(filterForm.ecological) }}
+                {{ form_widget(filterForm.ecological, {'attr': {'class': 'form-select'}}) }}
+            </div>
+            <div class="col-md-3">
+                {{ form_label(filterForm.maxPrice) }}
+                {{ form_widget(filterForm.maxPrice, {'attr': {'class': 'form-control'}}) }}
+            </div>
+            <div class="col-md-3">
+                {{ form_label(filterForm.minRating) }}
+                {{ form_widget(filterForm.minRating, {'attr': {'class': 'form-control'}}) }}
+            </div>
+            <div class="col-md-12 p-3">
+                <button type="submit" class="btn btn-primary">Filtrer</button>
+            </div> 
+            {# button deleted here because already included CarpoolingFilterType Form #}
+        {# {{ form_rest(filterForm) }} #}
+        {{ form_end(filterForm) }}
+            {# {% else %}
+                <h3>Filtrer</h3>
+                <p class="text-muted">Aucun filtre disponible pour le moment.</p> #}
+    </div>
+    {% endif %}
+
+{# Bloc result – only showed after submitting CarpoolingSearchType (via method GET) #}
 {% if app.request.query.all %}
     {% if carpoolings|length %}
         <div class="container">

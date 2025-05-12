@@ -9,6 +9,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 
 class CarpoolingSearchType extends AbstractType
 {
@@ -30,7 +31,7 @@ class CarpoolingSearchType extends AbstractType
                 'label' => 'Date de départ',
                 'required' => true,
             ])
-            ->add('minPrice', NumberType::class, [
+            /* ->add('minPrice', NumberType::class, [
                 'required' => false,
                 'label' => 'Prix min (€)',
                 'attr' => ['placeholder' => 'Prix min.']
@@ -39,13 +40,25 @@ class CarpoolingSearchType extends AbstractType
                 'required' => false,
                 'label' => 'Prix max (€)',
                 'attr' => ['placeholder' => 'Prix max.']
-            ]);
+            ]) 
+            ->add('search', SubmitType::class, [
+                'label' => 'Rechercher',
+                'attr' => ['class' => 'btn btn-primary btn-lg px-4 me-md-6 fw-bold']
+            ]);*/
+        ;
     }
 
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'csrf_protection' => false, // inutile ici car formulaire en GET
+            'csrf_protection' => false, // No need because Form in GET
         ]);
     }
+
+    /* This allows symfony to link the data submitted to the right form */
+    public function getBlockPrefix(): string
+    {
+        return 'carpooling_search';
+    }
+
 }

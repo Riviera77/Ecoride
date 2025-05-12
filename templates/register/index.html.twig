@@ -1,20 +1,33 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Hello RegisterController!{% endblock %}
+{% block title %}Inscription{% endblock %}
 
 {% block body %}
-<style>
-    .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
-    .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
-</style>
+<div class="container mt-5">
+    <h1 class="mb-4">Créer un compte</h1>
 
-<div class="example-wrapper">
-    <h1>Hello {{ controller_name }}! ✅</h1>
+    <form method="post" class="needs-validation" novalidate>
+        <div class="mb-3">
+            <label for="username" class="form-label">Pseudo</label>
+            <input type="text" class="form-control" id="username" required>
+        </div>
 
-    This friendly message is coming from:
-    <ul>
-        <li>Your controller at <code>/Users/grey972/Documents/github/exam/Ecoride/src/Controller/RegisterController.php</code></li>
-        <li>Your template at <code>/Users/grey972/Documents/github/exam/Ecoride/templates/register/index.html.twig</code></li>
-    </ul>
+        <div class="mb-3">
+            <label for="email" class="form-label">Adresse email</label>
+            <input type="email" class="form-control" id="email" required>
+        </div>
+
+        <div class="mb-3">
+            <label for="password" class="form-label">Mot de passe</label>
+            <input type="password" class="form-control" id="password" required>
+        </div>
+
+        <div class="mb-3">
+            <label for="confirmPassword" class="form-label">Confirmer le mot de passe</label>
+            <input type="password" class="form-control" id="confirmPassword" required>
+        </div>
+
+        <button type="submit" class="btn btn-primary">S'inscrire</button>
+    </form>
 </div>
 {% endblock %}

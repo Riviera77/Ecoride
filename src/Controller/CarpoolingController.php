@@ -4,63 +4,75 @@ namespace App\Controller;
 
 use App\Entity\Carpooling;
 use App\Form\CarpoolingType;
+use App\Service\RatingService;
+use App\Form\CarpoolingFilterType;
 use App\Form\CarpoolingSearchType;
 use App\Repository\CarpoolingRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 #[Route('/carpooling')]
 final class CarpoolingController extends AbstractController
 {
     #[Route('/', name: 'app_carpooling_index', methods: ['GET', 'POST'])]
-    public function index(Request $request, CarpoolingRepository $carpoolingRepository): Response
+    public function index(Request $request, CarpoolingRepository $carpoolingRepository, RatingService $ratingService): Response
     {
-        $form = $this->createForm(CarpoolingSearchType::class, null, [
-            'method' => 'GET',
-        ]);
-        $form->handleRequest($request);
-
-        /* $carpoolings = $carpoolingRepository->findAll();
-        foreach ($carpoolings as $carpooling) {
-        dump($carpooling->getCars());
-        }
-        die(); */
-
         $carpoolings = [];
         $suggestions = [];
 
-        if ($form->isSubmitted() && $form->isValid() && !empty(array_filter($form->getData()))) {
-            $criteria = $form->getData();
-            $carpoolings = $carpoolingRepository->findBySearchCriteria($criteria);
-            
+        // 1. Create and treate search form
+        $searchForm = $this->createForm(CarpoolingSearchType::class, null, [
+            'method' => 'GET',
+        ]);
+        $searchForm->handleRequest($request);
+
+        // Data of search
+        $searchData = $request->query->all('carpooling_search');
+
+        // if research data is present (either via form or URL), the search is made 
+        if (!empty(array_filter($searchData))) {
+            $carpoolings = $carpoolingRepository->findBySearchCriteria($searchData);
+
             if (empty($carpoolings)) {
-                // Suggestion alternative : trajets le même jour sans le prix
-                $suggestions = $carpoolingRepository->findSimilarRides($criteria);
-            }            
+                $suggestions = $carpoolingRepository->findSimilarRides($searchData);
+            }
         }
-        else {
-            // fallback : affiche tous les trajets avec places restantes sans critères de recherche
-            /* $carpoolings = $carpoolingRepository->createQueryBuilder('c')
-            ->where('c.numberSeats > 0')
-            ->getQuery()
-            ->getResult(); */
-            $carpoolings = []; // Ne rien afficher par défaut
-            $suggestions = [];
+
+        // 2. Create and treatment filter form (always instantiated)
+        $filterForm = $this->createForm(CarpoolingFilterType::class, null, [
+            'method' => 'GET'
+        ]);
+        $filterForm->handleRequest($request);
+
+        // Data of filter
+        $filterData = $request->query->all('carpooling_filter');
+
+        // if filter is submitted, relaunch the first search, then apply the filter
+        if (!empty(array_filter($filterData))) {
+            // if carpoolings not search yet, I recover it
+            if (empty($carpoolings) && !empty($searchData)) {
+                $carpoolings = $carpoolingRepository->findBySearchCriteria($searchData);
+            }
+
+            // then apply the filter
+            $mergedCriteria = array_merge($searchData, $filterData);
+            $carpoolings = $carpoolingRepository->findBySearchAndFilterCriteria($mergedCriteria, $ratingService);
         }
-        /* // filter by search criteria otherwise show everything
-        if (!empty($criteria)) {
-            $carpoolings = $carpoolingRepository->findBy($criteria);
-        } else {
-            $carpoolings = $carpoolingRepository->findAll();
-        } */
+
+        // 3. Generation of the URL for the filter form (action with search settings)
+        $queryString = http_build_query(['carpooling_search' => $searchData]);
+        $filterFormAction = $this->generateUrl('app_carpooling_index') . '?' . $queryString;
 
         return $this->render('carpooling/index.html.twig', [
-            'form' => $form->createView(),
+            'form' => $searchForm->createView(),
+            'filterForm' => count($carpoolings) > 0 ? $filterForm->createView() : null,
             'carpoolings' => $carpoolings,
             'suggestions' => $suggestions,
+            'filterFormAction' => $filterFormAction,
         ]);
     }
 
@@ -87,10 +99,19 @@ final class CarpoolingController extends AbstractController
     }
 
     #[Route('/{id}', name: 'app_carpooling_show', methods: ['GET'])]
-    public function show(Carpooling $carpooling): Response
+    public function show(Carpooling $carpooling, RatingService $ratingService): Response
     {
+        // recover object User($driverId) : the driver
+        $driverId = $carpooling->getUsers();
+        // recover the average rating for the driver
+        $averageRating = $ratingService->getAverageRatingForDriver($driverId->getId());
+        // recover the comments for the driver
+        $comments = $ratingService->getCommentsForDriver($driverId->getId());
+
         return $this->render('carpooling/show.html.twig', [
             'carpooling' => $carpooling,
+            'averageRating' => $averageRating,
+            'comments' => $comments,
         ]);
     }
 
