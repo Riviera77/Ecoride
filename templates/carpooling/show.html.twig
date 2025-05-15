@@ -68,63 +68,30 @@
 
         <a href="{{ path('app_carpooling_index') }}" class="btn btn-primary">Retour à la liste des covoiturages</a>
 
+        {% if app.user %}
+            {% set alreadyPassenger = carpooling.passengers.contains(app.user) %}
+            {% if alreadyPassenger %}
+                <div class="alert alert-info mt-3">
+                    Vous participez déjà à ce covoiturage.
+                </div>
+            {% elseif carpooling.numberSeats > 0 %}
+                <a href="{{ path('app_carpooling_participate', { id: carpooling.id }) }}" class="btn btn-primary mt-3">
+                    Participer à ce covoiturage
+                </a>
+            {% else %}
+                <div class="alert alert-warning mt-3">
+                    Il n'y a plus de places disponibles.
+                </div>
+            {% endif %}
+            {% else %}
+                <div class="card my-4 overflow-hidden text-bg-dark shadow-lg">
+                    <a href="{{ path('app_login') }}">Connectez-vous</a> ou 
+                    <a href="{{ path('app_register') }}">créez un compte</a> pour participer à ce covoiturage.
+                </div>
+        {% endif %}
+
         <a href="{{ path('app_carpooling_edit', {'id': carpooling.id}) }}" class="btn btn-primary">Modifier</a>
     </div>
-
-
-
-    {# <table class="table">
-        <tbody>
-            <tr>
-                <th>Id</th>
-                <td>{{ carpooling.id }}</td>
-            </tr>
-            <tr>
-                <th>DepartureAddress</th>
-                <td>{{ carpooling.departureAddress }}</td>
-            </tr>
-            <tr>
-                <th>ArrivalAddress</th>
-                <td>{{ carpooling.arrivalAddress }}</td>
-            </tr>
-            <tr>
-                <th>DepartureDate</th>
-                <td>{{ carpooling.departureDate ? carpooling.departureDate|date('Y-m-d') : '' }}</td>
-            </tr>
-            <tr>
-                <th>ArrivalDate</th>
-                <td>{{ carpooling.arrivalDate ? carpooling.arrivalDate|date('Y-m-d') : '' }}</td>
-            </tr>
-            <tr>
-                <th>DepartureTime</th>
-                <td>{{ carpooling.departureTime ? carpooling.departureTime|date('H:i:s') : '' }}</td>
-            </tr>
-            <tr>
-                <th>ArrivalTime</th>
-                <td>{{ carpooling.arrivalTime ? carpooling.arrivalTime|date('H:i:s') : '' }}</td>
-            </tr>
-            <tr>
-                <th>Price</th>
-                <td>{{ carpooling.price }}</td>
-            </tr>
-            <tr>
-                <th>NumberSeats</th>
-                <td>{{ carpooling.numberSeats }}</td>
-            </tr>
-            <tr>
-                <th>Preference</th>
-                <td>{{ carpooling.preference }}</td>
-            </tr>
-            <tr>
-                <th>Status</th>
-                <td>{{ carpooling.status }}</td>
-            </tr>
-        </tbody>
-    </table>
-
-    <a href="{{ path('app_carpooling_index') }}">back to list</a>
-
-    <a href="{{ path('app_carpooling_edit', {'id': carpooling.id}) }}">edit</a> #}
 
     {{ include('carpooling/_delete_form.html.twig') }}
 {% endblock %}
