@@ -1,0 +1,18 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Confirmer votre participation{% endblock %}
+
+{% block body %}
+<div class="container mt-5">
+    <h1 class="mb-4">Confirmation de participation</h1>
+    <p>La plateforme Ecoride vous déduira <strong>{{ requiredCredits }} crédits</strong>.</p>
+    <p>Trajet : {{ carpooling.departureAddress }} → {{ carpooling.arrivalAddress }}</p>
+    <p>Date : {{ carpooling.departureDate|date('d/m/Y') }} à {{ carpooling.departureTime|date('H:i') }}</p>
+
+    <form method="POST" action="{{ path('app_carpooling_participate_confirm', { id: carpooling.id }) }}">
+        <input type="hidden" name="_token" value="{{ csrf_token('participate' ~ carpooling.id) }}">
+        <button type="submit" class="btn btn-primary">Confirmer</button>
+        <a href="{{ path('app_carpooling_show', { id: carpooling.id }) }}" class="btn btn-danger">Annuler</a>
+    </form>
+</div>
+{% endblock %}
