@@ -41,13 +41,16 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(length: 50, nullable: true)]
     private ?string $photo = null;
 
+    #[ORM\Column(type: 'json')]
+    private array $roleType = [];
+
     /**
      * @var Collection<int, Credit>
      */
     #[ORM\OneToMany(targetEntity: Credit::class, mappedBy: 'users')]
     private Collection $credits;
 
-    /**
+    /**0
      * @var Collection<int, Car>
      */
     #[ORM\OneToMany(targetEntity: Car::class, mappedBy: 'users')]
@@ -235,33 +238,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     /**
      * @return Collection<int, Carpooling>
      */
-    /* public function getCarpoolings(): Collection
-    {
-        return $this->carpoolings;
-    }
-
-    public function addCarpooling(Carpooling $carpooling): static
-    {
-        if (!$this->carpoolings->contains($carpooling)) {
-            $this->carpoolings->add($carpooling); */
-            /* $carpooling->addUser($this); */
-        /* }
-
-        return $this;
-    }
-
-    public function removeCarpooling(Carpooling $carpooling): static
-    {
-        if ($this->carpoolings->removeElement($carpooling)) { */
-            /* $carpooling->removeUser($this); */
-        /* }
-
-        return $this;
-    } */
-
-    /**
-     * @return Collection<int, Carpooling>
-     */
     public function getCarpoolingsAsDriver(): Collection
     {
         return $this->carpoolingsAsDriver;
@@ -310,6 +286,23 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
             $carpooling->removePassenger($this);
         }
 
+        return $this;
+    }
+
+    /**
+     * @return list<string>
+     */
+    public function getRoleType(): array
+    {
+        return $this->roleType;
+    }
+
+    /**
+     * @param list<string> $roleType
+     */
+    public function setRoleType(array $roleType): self
+    {
+        $this->roleType = $roleType;
         return $this;
     }
 }
