@@ -11,6 +11,7 @@
                 <th>Id</th>
                 <th>Email</th>
                 <th>Roles</th>
+                <th>Statut</th>
                 <th>Password</th>
                 <th>Username</th>
                 <th>Photo</th>
@@ -24,6 +25,13 @@
                 <td>{{ user.id }}</td>
                 <td>{{ user.email }}</td>
                 <td>{{ user.roles ? user.roles|json_encode : '' }}</td>
+                <td>
+                    {% if 'ROLE_USER_SUSPENDED' in user.roles %}
+                        <span class="badge bg-danger">Suspendu</span>
+                    {% else %}
+                        <span class="badge bg-success">Actif</span>
+                    {% endif %}
+                </td>
                 <td>{{ user.password }}</td>
                 <td>{{ user.username }}</td>
                 <td>{{ user.photo }}</td>

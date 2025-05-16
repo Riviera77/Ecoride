@@ -19,6 +19,14 @@
                     <li class="nav-item">
                         <a class="nav-link" href="{{path('app_login')}}">connexion</a>
                     </li>
+                    {% if is_granted('ROLE_ADMIN') %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ path('admin_dashboard') }}">Espace Admin</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ path('employee_index') }}">Gérer les employés</a>
+                        </li>
+                    {% endif %}
                     <li class="nav-item">
                         <a class="nav-link" href="{{path('app_logout')}}">déconnexion</a>
                     </li>

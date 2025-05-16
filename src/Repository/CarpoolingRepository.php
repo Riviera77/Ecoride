@@ -155,6 +155,24 @@ class CarpoolingRepository extends ServiceEntityRepository
     return $qb->getQuery()->getResult();
     }
 
+
+        public function countCarpoolingsByDay(): array
+    {
+        $conn = $this->getEntityManager()->getConnection();
+
+        $sql = '
+            SELECT DATE(departure_date) as date, COUNT(id) as count
+            FROM carpooling
+            GROUP BY date
+            ORDER BY date ASC
+        ';
+
+        $stmt = $conn->prepare($sql);
+        $resultSet = $stmt->executeQuery();
+
+        return $resultSet->fetchAllAssociative();
+    }
+
     //    public function findByExampleField($value): array
     //    {
     //        return $this->createQueryBuilder('c')
