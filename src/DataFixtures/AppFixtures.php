@@ -6,21 +6,26 @@ use App\Entity\Car;
 use App\Entity\User;
 use App\Entity\Credit;
 use App\Entity\Carpooling;
-use App\Entity\CarpoolingParticipation;
 use Doctrine\Persistence\ObjectManager;
 use Doctrine\Bundle\FixturesBundle\Fixture;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 class AppFixtures extends Fixture
 {
+
+    private UserPasswordHasherInterface $passwordHasher;
+
+    public function __construct(UserPasswordHasherInterface $passwordHasher)
+    {
+        $this->passwordHasher = $passwordHasher;
+    }
+    
     public function load(ObjectManager $manager): void
     {
-        // $product = new Product();
-        // $manager->persist($product);
-
         // --- Create a user ---
         $user1 = new User();
         $user1->setEmail("vanessa13@example.com");
-        $user1->setPassword("vanessa13"); // password not hashed (juste for the tests)
+        $user1->setPassword($this->passwordHasher->hashPassword($user1, 'vanessa13'));
         $user1->setRoles(["ROLE_USER"]);
         $user1->setUsername("Vanessa13");
         $user1->setPhoto('user1.png');
@@ -28,7 +33,7 @@ class AppFixtures extends Fixture
 
         $user2 = new User();
         $user2->setEmail("carla17@example.com");
-        $user2->setPassword("carla17"); // password not hashed (juste for the tests)    
+        $user2->setPassword($this->passwordHasher->hashPassword($user2, 'carla178'));    
         $user2->setRoles(["ROLE_USER"]);
         $user2->setUsername("Carla17");
         $user2->setPhoto('user2.png');
@@ -36,12 +41,26 @@ class AppFixtures extends Fixture
 
         $user3 = new User();
         $user3->setEmail("andre4125@example.com");
-        $user3->setPassword("andre4125"); // password not hashed (juste for the tests)  
+        $user3->setPassword($this->passwordHasher->hashPassword($user3, 'andre4125'));
         $user3->setRoles(["ROLE_USER"]);
         $user3->setUsername("Andre4125");
         $user3->setPhoto('user3.png');
         $manager->persist($user3);
         
+        $admin = new User();
+        $admin->setEmail('admin@ecoride.com');
+        $admin->setPassword($this->passwordHasher->hashPassword($admin, 'admin321'));
+        $admin->setRoles(['ROLE_ADMIN']);
+        $admin->setUsername('Admin');
+        $manager->persist($admin);
+
+        $employee = new User();
+        $employee->setEmail('employee@ecoride.com');
+        $employee->setPassword($this->passwordHasher->hashPassword($employee, 'employee321'));
+        $employee->setRoles(['ROLE_EMPLOYEE']);
+        $employee->setUsername('Employé 1');
+        $manager->persist($employee);
+
         // --- Create a car ---
         $car1 = new Car();
         $car1->setUsers($user1);

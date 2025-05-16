@@ -1,0 +1,21 @@
+{{ form_start(form) }}
+    {{ form_row(form.email) }}
+    {{ form_row(form.roles) }}
+    {{ form_row(form.password) }}
+    {{ form_row(form.username) }}
+    {{ form_row(form.photo) }}
+    {{ form_row(form.roleType) }}
+
+    {# ID pour cibler la section et une classe sur les cases à cocher #}
+    <div id="car-fields" style="display: none;">
+        <h3>Mes véhicules</h3>
+        {{ form_row(form.cars) }}
+    </div>
+
+    <div id="driver-preferences" style="display: none;">
+        <h3>Préférences du chauffeur</h3>
+        {{ form_row(form.preference) }}
+    </div>
+
+    <button class="btn">{{ button_label|default('Save') }}</button>
+{{ form_end(form) }}

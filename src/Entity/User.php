@@ -41,7 +41,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(length: 50, nullable: true)]
     private ?string $photo = null;
 
-    #[ORM\Column(type: 'json')]
+    #[ORM\Column(type: 'json', nullable: true)]
     private array $roleType = [];
 
     /**
@@ -67,6 +67,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      */
     #[ORM\OneToMany(targetEntity: Carpooling::class, mappedBy: 'passengers')]
     private Collection $carpoolingsAsPassenger;
+
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
+    private ?string $preference = null;
 
     public function __construct()
     {
@@ -303,6 +306,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setRoleType(array $roleType): self
     {
         $this->roleType = $roleType;
+        return $this;
+    }
+
+    public function getPreference(): ?string
+    {
+        return $this->preference;
+    }
+
+    public function setPreference(?string $preference): static
+    {
+        $this->preference = $preference;
+
         return $this;
     }
 }
