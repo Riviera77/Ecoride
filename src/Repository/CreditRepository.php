@@ -16,6 +16,38 @@ class CreditRepository extends ServiceEntityRepository
         parent::__construct($registry, Credit::class);
     }
 
+
+        public function sumCreditsByDay(): array
+    {
+        $conn = $this->getEntityManager()->getConnection();
+
+        $sql = '
+            SELECT DATE(transaction_date) as date, SUM(balance) as total
+            FROM credit
+            GROUP BY date
+            ORDER BY date ASC
+        ';
+
+        $stmt = $conn->prepare($sql);
+        $resultSet = $stmt->executeQuery();
+
+        return $resultSet->fetchAllAssociative();
+    }
+
+        public function getTotalCredits(): int
+    {
+        $conn = $this->getEntityManager()->getConnection();
+
+        $sql = 'SELECT SUM(balance) as total FROM credit';
+
+        $stmt = $conn->prepare($sql);
+        $resultSet = $stmt->executeQuery();
+
+        $result = $resultSet->fetchAssociative();
+
+        return (int) $result['total'];
+    }
+
     //    /**
     //     * @return Credit[] Returns an array of Credit objects
     //     */

@@ -1,0 +1,58 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Employee index{% endblock %}
+
+{% block body %}
+    <div class="container">
+    
+        <h1>Liste des employés</h1>
+
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Id</th>
+                    <th>Email</th>
+                    <th>Roles</th>
+                    <th>Statut</th>
+                    <th>Username</th>
+                    <th>Photo</th>
+                    <th>RoleType</th>
+                    <th>Preference</th>
+                    <th>actions</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for user in users %}
+                <tr>
+                    <td>{{ user.id }}</td>
+                    <td>{{ user.email }}</td>
+                    <td>{{ user.roles ? user.roles|json_encode : '' }}</td>
+                    <td>
+                        {% if 'ROLE_EMPLOYEE_SUSPENDED' in user.roles %}
+                            <span class="badge bg-danger">Suspendu</span>
+                        {% else %}
+                            <span class="badge bg-success">Actif</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ user.username }}</td>
+                    <td>{{ user.photo }}</td>
+                    <td>{{ user.roleType ? user.roleType|json_encode : '' }}</td>
+                    <td>{{ user.preference }}</td>
+                    <td>
+                        <a href="{{ path('employee_show', {'id': user.id}) }}">show</a>
+                        <a href="{{ path('employee_edit', {'id': user.id}) }}">edit</a>
+                    </td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td colspan="9">no records found</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+
+        <a href="{{ path('admin_dashboard') }}">Retour</a> <br>
+
+        <a href="{{ path('employee_new') }}">Créer nouvel employé</a>
+    </div>
+{% endblock %}

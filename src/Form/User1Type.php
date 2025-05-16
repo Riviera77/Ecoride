@@ -41,7 +41,18 @@ class User1Type extends AbstractType
             ->add('preference', TextareaType::class, [
                 'required' => false,
                 'label' => 'Vos préférences (animaux, musique, discussions, etc.)',
-            ]);
+            ])
+
+            ->add('roles', ChoiceType::class, [
+                'choices' => [
+                    'Actif' => 'ROLE_USER',
+                    'Suspendu' => 'ROLE_USER_SUSPENDED',
+                ],
+                'expanded' => false,
+                'multiple' => false, // Un seul rôle à la fois
+                'label' => 'Statut du compte',
+            ])
+        ;
     }
 
     public function configureOptions(OptionsResolver $resolver): void
