@@ -48,6 +48,7 @@ class Carpooling
     private ?string $status = null;
 
     #[ORM\ManyToOne(inversedBy: 'carpoolings')]
+    #[ORM\JoinColumn(nullable: false)]
     private ?Car $cars = null;
 
     #[ORM\ManyToOne(inversedBy: 'carpoolingsAsDriver')]

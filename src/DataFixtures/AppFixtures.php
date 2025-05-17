@@ -29,6 +29,7 @@ class AppFixtures extends Fixture
         $user1->setRoles(["ROLE_USER"]);
         $user1->setUsername("Vanessa13");
         $user1->setPhoto('user1.png');
+        $user1->setRoleType(['chauffeur_passager']);
         $manager->persist($user1);
 
         $user2 = new User();
@@ -37,6 +38,7 @@ class AppFixtures extends Fixture
         $user2->setRoles(["ROLE_USER"]);
         $user2->setUsername("Carla17");
         $user2->setPhoto('user2.png');
+        $user2->setRoleType(['chauffeur_passager']);
         $manager->persist($user2);
 
         $user3 = new User();
@@ -45,6 +47,7 @@ class AppFixtures extends Fixture
         $user3->setRoles(["ROLE_USER"]);
         $user3->setUsername("Andre4125");
         $user3->setPhoto('user3.png');
+        $user3->setRoleType(['chauffeur_passager']);
         $manager->persist($user3);
         
         $admin = new User();

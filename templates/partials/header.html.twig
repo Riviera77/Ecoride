@@ -16,23 +16,36 @@
                     <li class="nav-item">
                         <a class="nav-link" href="{{path('app_carpooling_index')}}"></i>covoiturage</a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{path('app_login')}}">connexion</a>
-                    </li>
-                    {% if is_granted('ROLE_ADMIN') %}
+
+                    {% if app.user %}
                         <li class="nav-item">
-                            <a class="nav-link" href="{{ path('admin_dashboard') }}">Espace Admin</a>
+                            <a class="nav-link" href="{{ path('app_user_dashboard') }}">Tableau de bord</a>
+                        </li>
+
+                        {% if is_granted('ROLE_ADMIN') %}
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ path('admin_dashboard') }}">Espace Admin</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ path('employee_index') }}">Gérer les employés</a>
+                            </li>
+                        {% endif %}
+
+                        <li class="nav-item">
+                            <form action="{{ path('app_logout') }}" method="post">
+                                <button class="nav-link" type="submit">Déconnexion</button>
+                            </form>
+                        </li>
+                    {% else %}
+
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{path('app_login')}}">connexion</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="{{ path('employee_index') }}">Gérer les employés</a>
+                            <a class="nav-link" href="{{path('app_register')}}">Inscription</a>
                         </li>
                     {% endif %}
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{path('app_logout')}}">déconnexion</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{path('app_register')}}">Inscription</a>
-                    </li>
+
                     <li class="nav-item">
                         <a class="nav-link" href="{{path('app_contact')}}">Contact</a>
                     </li>                    

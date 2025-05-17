@@ -62,9 +62,9 @@
     <div class="container px-4 py-5 my-5 p-3 text-center align-items-center rounded-3 border shadow-lg">
         <h3>Filtrer les résultats</h3>
 
-        {% if filterForm is defined %}
+        {# {% if filterForm is defined %}
             {{ dump(filterForm.vars.data) }}
-        {% endif %}
+        {% endif %} #}
 
         {{ form_start(filterForm, {
             'attr': {'class': 'row g-3 p-3 align-items-end'},
@@ -216,11 +216,11 @@
     {% endif %}
 {% endif %}
 
-<div class="text-center mt-5 me-5 pb-2">
+{# <div class="text-center mt-5 me-5 pb-2">
     <a href="{{ path('app_carpooling_new') }}" class="btn btn-primary btn-lg">
         <i class="bi bi-plus-circle"></i> Créer un nouveau covoiturage
     </a>
-</div>
+</div> #}
 
 
 {% endblock %}
