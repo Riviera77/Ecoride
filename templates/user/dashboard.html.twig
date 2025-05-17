@@ -6,7 +6,11 @@
 <div class="container mt-5">
     <h1>Bienvenue, {{ app.user.username }}</h1>
 
-    <h2 class="mt-4">Historique de mes covoiturages</h2>
+    <a href="{{ path('app_user_history') }}" class="btn btn-outline-primary mb-3">
+        📜 Voir mon historique de covoiturages
+    </a>
+
+    <h2 class="mt-4">Mes covoiturages</h2>
     <h6>Votre rôle actuel : {{ app.user.roleType|join(', ') }}</h6>
 
     {% if carpoolings is not empty %}

@@ -2,6 +2,7 @@
 
 namespace App\Repository;
 
+use App\Entity\User;
 use App\Entity\Carpooling;
 use App\Service\RatingService;
 use Doctrine\Persistence\ManagerRegistry;
@@ -173,6 +174,18 @@ class CarpoolingRepository extends ServiceEntityRepository
         return $resultSet->fetchAllAssociative();
     }
 
+    public function findAllByUserParticipation(User $user): array
+    {
+        return $this->createQueryBuilder('c')
+            ->leftJoin('c.passengers', 'p')
+            ->leftJoin('c.users', 'd') // chauffeur
+            ->addSelect('p', 'd')
+            ->where('p = :user OR d = :user')
+            ->setParameter('user', $user)
+            ->orderBy('c.departureDate', 'DESC')
+            ->getQuery()
+            ->getResult();
+    }
     //    public function findByExampleField($value): array
     //    {
     //        return $this->createQueryBuilder('c')
