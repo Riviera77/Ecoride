@@ -4,15 +4,25 @@
 
 {% block body %}
 <div class="container mt-5">
-    <h1 class="mb-4">Confirmation de participation</h1>
-    <p>La plateforme Ecoride vous déduira <strong>{{ requiredCredits }} crédits</strong>.</p>
-    <p>Trajet : {{ carpooling.departureAddress }} → {{ carpooling.arrivalAddress }}</p>
-    <p>Date : {{ carpooling.departureDate|date('d/m/Y') }} à {{ carpooling.departureTime|date('H:i') }}</p>
+    {% if app.user %}
+        <div class="alert alert-secondary mt-3">
+            Vous avez actuellement <strong>{{ totalCredits }}</strong> crédits disponibles.
+            {% if totalCredits < 2 %}
+                <span class="text-danger">⚠️ Cela ne suffira pas pour participer à ce trajet.</span>
+            {% else %}
+                ✅ Vous avez assez de crédits pour participer à ce trajet.
+                <h1 class="mb-4">Confirmation de participation</h1>
+                <p>La plateforme Ecoride vous déduira <strong>{{ requiredCredits }} crédits</strong>.</p>
+                <p>Trajet : {{ carpooling.departureAddress }} → {{ carpooling.arrivalAddress }}</p>
+                <p>Date : {{ carpooling.departureDate|date('d/m/Y') }} à {{ carpooling.departureTime|date('H:i') }}</p>
 
-    <form method="POST" action="{{ path('app_carpooling_participate_confirm', { id: carpooling.id }) }}">
-        <input type="hidden" name="_token" value="{{ csrf_token('participate' ~ carpooling.id) }}">
-        <button type="submit" class="btn btn-primary">Confirmer</button>
-        <a href="{{ path('app_carpooling_show', { id: carpooling.id }) }}" class="btn btn-danger">Annuler</a>
-    </form>
+                <form method="POST" action="{{ path('app_carpooling_participate_confirm', { id: carpooling.id }) }}">
+                    <input type="hidden" name="_token" value="{{ csrf_token('participate' ~ carpooling.id) }}">
+                    <button type="submit" class="btn btn-primary">Confirmer</button>
+                    <a href="{{ path('app_carpooling_show', { id: carpooling.id }) }}" class="btn btn-danger">Annuler</a>
+                </form>
+            {% endif %}
+        </div>
+    {% endif %}
 </div>
 {% endblock %}

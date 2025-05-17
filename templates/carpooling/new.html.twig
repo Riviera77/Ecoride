@@ -3,9 +3,33 @@
 {% block title %}New Carpooling{% endblock %}
 
 {% block body %}
-    <h1>Créer un nouveau covoiturage</h1>
+    <div class="container mt-5">
+        <h1>Créer un nouveau covoiturage</h1>
 
-    {{ include('carpooling/_form.html.twig') }}
+        <div class="alert alert-info">
+            <strong>💡 Info :</strong> 2 crédits seront prélevés à chaque passager, pour garantir le bon fonctionnement de la plateforme.
+        </div>
+
+        {{ form_start(form) }}
+            {{ form_row(form.departureAddress) }}
+            {{ form_row(form.arrivalAddress) }}
+            {{ form_row(form.departureDate) }}
+            {{ form_row(form.arrivalDate) }}
+            {{ form_row(form.departureTime) }}
+            {{ form_row(form.arrivalTime) }}
+            {{ form_row(form.price) }}
+            {{ form_row(form.numberSeats) }}
+            {{ form_row(form.preference) }}
+            {{ form_row(form.status) }}
+            {{ form_row(form.cars) }}
+            <button class="btn btn-primary mt-3">Valider</button>
+        {{ form_end(form) }}
+
+        {# <a href="{{ path('app_car_new') }}" class="btn btn-outline-secondary mt-3">Ajouter un nouveau véhicule</a> #}
+    
+    {# {{ include('carpooling/_form.html.twig') }} #}
 
     <a href="{{ path('app_carpooling_index') }}">Retour à la liste</a>
+    </div>
+
 {% endblock %}

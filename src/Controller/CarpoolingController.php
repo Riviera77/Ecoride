@@ -81,27 +81,48 @@ final class CarpoolingController extends AbstractController
     #[Route('/new', name: 'app_carpooling_new', methods: ['GET', 'POST'])]
     public function new(Request $request, EntityManagerInterface $entityManager): Response
     {
+        // Check if the user is connected
+        $this->denyAccessUnlessGranted('ROLE_USER');
+
+        // 1. Recover and verify the role
+        /** @var User $user */
+        $user = $this->getUser();
+        // Nouveau test compatible avec tableau de rôles
+        $roleTypes = $user->getRoleType(); // Ex: ['chauffeur'] ou ['passager']
+        
+        if (!array_intersect($roleTypes, ['chauffeur', 'chauffeur_passager'])) {
+            $this->addFlash('danger', 'Seuls les chauffeurs peuvent proposer un trajet.');
+            return $this->redirectToRoute('app_user_dashboard');
+        }
+
+        // 2. Initialise the entity and link the user
         $carpooling = new Carpooling();
         $carpooling->setUsers($this->getUser());
         
-        $form = $this->createForm(CarpoolingType::class, $carpooling);
+        // 3. create the form via option 'user'
+        $form = $this->createForm(CarpoolingType::class, $carpooling, [
+            'user' => $user,
+        ]);
         $form->handleRequest($request);
 
+        // 4. Treatment of the form
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager->persist($carpooling);
             $entityManager->flush();
 
+            $this->addFlash('success', 'Votre trajet a été enregistré ! 🚗');
             return $this->redirectToRoute('app_carpooling_index', [], Response::HTTP_SEE_OTHER);
         }
 
+        // 5. display the form
         return $this->render('carpooling/new.html.twig', [
             'carpooling' => $carpooling,
-            'form' => $form,
+            'form' => $form->createView(),
         ]);
     }
 
     // Route for the show page: display the details of a carpooling
-    #[Route('/{id}', name: 'app_carpooling_show', methods: ['GET'])]
+    #[Route('/{id}', name: 'app_carpooling_show', methods: ['GET'], requirements: ['id' => '\d+'])]
     public function show(Carpooling $carpooling, RatingService $ratingService): Response
     {
         // recover object User($driverId) : the driver
@@ -188,6 +209,7 @@ final class CarpoolingController extends AbstractController
             return $this->render('carpooling/confirm_participation.html.twig', [
                 'carpooling' => $carpooling,
                 'requiredCredits' => $requiredCredits,
+                'totalCredits' => $totalCredits,
             ]);
     }
 
