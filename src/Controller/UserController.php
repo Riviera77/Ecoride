@@ -3,11 +3,16 @@
 namespace App\Controller;
 
 use App\Entity\User;
+use App\Entity\Credit;
 use App\Form\User1Type;
+use App\Entity\Carpooling;
+use Symfony\Component\Mime\Email;
 use App\Repository\UserRepository;
 use App\Repository\CarpoolingRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
@@ -94,5 +99,98 @@ final class UserController extends AbstractController
         return $this->render('user/dashboard.html.twig', [
             'carpoolings' => $carpoolings,
         ]);
+    }
+
+    #[Route('/history', name: 'app_user_history')]
+    public function history(CarpoolingRepository $carpoolingRepository, Security $security): Response 
+    {
+        $user = $security->getUser();
+        $carpoolings = $carpoolingRepository->findAllByUserParticipation($user);
+
+        return $this->render('user/history.html.twig', [
+            'carpoolings' => $carpoolings,
+            'currentUser' => $user,
+        ]);
+    }
+
+    #[Route('/user/carpooling/{id}/cancel-driver', name: 'cancel_carpooling_driver', methods: ['POST'])]
+    public function cancelAsDriver(Carpooling $carpooling, EntityManagerInterface $em, Security $security, MailerInterface $mailer): Response
+    {
+        $user = $security->getUser();
+
+        if ($carpooling->getUsers() !== $user) {
+            throw $this->createAccessDeniedException("Tu n'es pas le chauffeur de ce covoiturage.");
+        }
+
+        // Send email to passengers before canceling
+        foreach ($carpooling->getPassengers() as $passenger) {
+            $email = (new Email())
+                ->from('noreply@ecoride.com')
+                ->to($passenger->getEmail())
+                ->subject('🛑 Annulation de votre covoiturage')
+                ->html("
+                    <p>Bonjour {$passenger->getUsername()},</p>
+                    <p>Le covoiturage que vous aviez réservé a été <strong>annulé</strong> par le chauffeur.</p>
+                    <ul>
+                        <li><strong>Départ :</strong> {$carpooling->getDepartureAddress()}</li>
+                        <li><strong>Arrivée :</strong> {$carpooling->getArrivalAddress()}</li>
+                        <li><strong>Date :</strong> {$carpooling->getDepartureDate()->format('d/m/Y')}</li>
+                        <li><strong>Heure :</strong> {$carpooling->getDepartureTime()->format('H:i')}</li>
+                    </ul>
+                    <p>Nous vous prions de nous excuser pour la gêne occasionnée.</p>
+                    <p>— L’équipe Ecoride 🌱</p>
+                ");
+            $mailer->send($email);
+        }
+
+        // Remove all passengers from the carpooling
+        foreach ($carpooling->getPassengers() as $passenger) {
+            $carpooling->removePassenger($passenger);
+        }
+
+        // Repay/recover 2 credits for the driver
+        $credit = new Credit();
+        $credit->setUsers($user);
+        $credit->setBalance(2);
+        $credit->setTransactionDate(new \DateTimeImmutable());
+
+        // cancel carpooling
+        $em->remove($carpooling);
+        $em->persist($credit);
+        $em->flush();
+
+        $this->addFlash('success', 'Covoiturage annulé. 2 crédits t’ont été rendus.');
+
+        return $this->redirectToRoute('app_user_history');
+    }
+
+    #[Route('/user/carpooling/{id}/cancel-passenger', name: 'cancel_carpooling_passenger', methods: ['POST'])]
+    public function cancelAsPassenger(Carpooling $carpooling, EntityManagerInterface $em, Security $security): Response
+    {
+        $user = $security->getUser();
+
+        if (!$carpooling->getPassengers()->contains($user)) {
+            throw $this->createAccessDeniedException("Tu ne participes pas à ce covoiturage.");
+        }
+        //cancel passenger
+        $carpooling->removePassenger($user);
+
+        // let a seat available
+        $carpooling->setNumberSeats($carpooling->getNumberSeats() + 1);
+
+        //recover 2 credits
+        $credit = new Credit();
+        $credit->setUsers($user);
+        $credit->setBalance(2); 
+        $credit->setTransactionDate(new \DateTimeImmutable());
+
+
+        $em->persist($carpooling);
+        $em->persist($credit);
+        $em->flush();
+
+        $this->addFlash('success', 'Tu as quitté le covoiturage.');
+
+        return $this->redirectToRoute('app_user_history');
     }
 }

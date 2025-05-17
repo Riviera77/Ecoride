@@ -76,9 +76,20 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+  
+  mailhog:
+    image: mailhog/mailhog
+    container_name: mailhog_ecoride
+    ports:
+      - "1025:1025"
+      - "8025:8025"
+    networks:
+      - Ecoride_network
 
 volumes:
 ###> doctrine/doctrine-bundle ###
   database_data:
   mongo_data:
 ###< doctrine/doctrine-bundle ###
+
+  

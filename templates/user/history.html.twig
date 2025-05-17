@@ -1,0 +1,75 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Historique de mes covoiturages{% endblock %}
+
+{% block body %}
+    <div class="container mt-5">
+        <h1>🚗 Mon historique de covoiturages</h1> 
+    
+        {% if carpoolings is not empty %}
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Trajet</th>
+                        <th>Date</th>
+                        <th>Heure</th>
+                        <th>Véhicule</th>
+                        <th>Prix</th>
+                        <th>Places</th>
+                        <th>Rôle</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for carpool in carpoolings %}
+                    <tr>
+                        <td>{{ carpool.departureAddress }} → {{ carpool.arrivalAddress }}</td>
+                        <td>{{ carpool.departureDate|date('d/m/Y') }}</td>
+                        <td>{{ carpool.departureTime|date('H:i') }}</td>
+                        <td>{{ carpool.cars.model ?? 'N/A' }}</td>
+                        <td>{{ carpool.price }}</td>
+                        <td>{{ carpool.numberSeats }}</td>
+                        <td>
+                            {% if carpool.users == currentUser %}
+                                <span class="badge bg-primary">🚘 Chauffeur</span>
+                            {% elseif carpool.passengers.contains(currentUser) %}
+                                <span class="badge bg-success">👤 Passager</span>
+                            {% else %}
+                                <span class="badge bg-secondary">🤔 Non concerné</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if carpool.departureDate < "now"|date %}
+                                🏁 Terminé
+                            {% else %}
+                                📅 À venir <br>
+
+                                {% if carpool.users == currentUser %}
+                                    <form method="post" action="{{ path('cancel_carpooling_driver', {id: carpool.id}) }}">
+                                        <button type="submit" class="btn btn-danger btn-sm mt-1"
+                                                onclick="return confirm('Tu es sûr·e de vouloir annuler ce trajet ?')">
+                                            ❌ Annuler (chauffeur)
+                                        </button>
+                                    </form>
+                                {% elseif carpool.passengers.contains(currentUser) %}
+                                    <form method="post" action="{{ path('cancel_carpooling_passenger', {id: carpool.id}) }}">
+                                        <button type="submit" class="btn btn-warning btn-sm mt-1"
+                                                onclick="return confirm('Tu veux vraiment quitter ce covoiturage ?')">
+                                            🚫 Quitter
+                                        </button>
+                                    </form>
+                                {% endif %}
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p>Aucun covoiturage pour le moment.</p>
+        {% endif %}
+
+        <a href="{{ path('app_user_dashboard') }}">Retour</a>
+    </div>
+
+{% endblock %}
