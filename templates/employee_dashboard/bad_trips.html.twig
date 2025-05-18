@@ -1,0 +1,36 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Trajets signalés{% endblock %}
+
+{% block body %}
+<div class="container mt-4">
+    <h1>🚨 Trajets signalés</h1>
+
+    {% if incidents is empty %}
+        <p>Aucun trajet n'a été signalé.</p>
+    {% else %}
+        <table class="table table-bordered mt-3">
+            <thead>
+                <tr>
+                    <th>Trajet</th>
+                    <th>Passager</th>
+                    <th>Chauffeur</th>
+                    <th>Date</th>
+                    <th>Motif</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for incident in incidents %}
+                    <tr>
+                        <td>{{ incident.trip.departureAddress }} → {{ incident.trip.arrivalAddress }}</td>
+                        <td>{{ incident.reporter.username }}<br><small>{{ incident.reporter.email }}</small></td>
+                        <td>{{ incident.trip.driver.username }}</td>
+                        <td>{{ incident.createdAt }}</td>
+                        <td>{{ incident.message }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+</div>
+{% endblock %}

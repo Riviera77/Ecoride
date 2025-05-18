@@ -3,8 +3,9 @@
 namespace App\Form;
 
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 
 class ReportProblemType extends AbstractType
 {
@@ -12,8 +13,13 @@ class ReportProblemType extends AbstractType
     {
         $builder->add('message', TextareaType::class, [
             'label' => 'Décris ce qui s’est mal passé',
-            'attr' => ['rows' => 5],
-            'required' => true,
+            'attr' => ['rows' => 5, 'placeholder' => 'Ex : Le chauffeur est arrivé avec 2h de retard.']
         ]);
+    }
+
+
+    public function configureOptions(OptionsResolver $resolver): void
+    {
+        $resolver->setDefaults([]);
     }
 }
