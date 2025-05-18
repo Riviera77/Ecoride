@@ -55,6 +55,12 @@ class Carpooling
     #[ORM\JoinColumn(nullable: false)]
     private ?User $users = null;
 
+    #[ORM\Column(type: 'json', nullable: true)]
+    private ?array $validatedPassengerIds = null;
+
+    #[ORM\Column(type: 'json', nullable: true)]
+    private ?array $problemReports = null;
+
     /**
      * @var Collection<int, User>
      */
@@ -65,6 +71,7 @@ class Carpooling
     public function __construct()
     {
         $this->passengers = new ArrayCollection();
+        $this->validatedPassengerIds = [];
     }
 
     
@@ -267,6 +274,53 @@ class Carpooling
     public function removePassenger(User $passenger): static
     {
         $this->passengers->removeElement($passenger);
+
+        return $this;
+    }
+
+    public function getValidatedPassengerIds(): array
+    {
+        if (!is_array($this->validatedPassengerIds)) {
+        return [];
+        }
+
+    return $this->validatedPassengerIds;
+    }
+
+    public function setValidatedPassengerIds(array $ids): self
+    {
+        $this->validatedPassengerIds = $ids;
+        return $this;
+    }
+
+    public function addValidatedPassengerId(int $userId): self
+    {
+        if (!is_array($this->validatedPassengerIds)) {
+            $this->validatedPassengerIds = [];
+        }
+
+        if (!in_array($userId, $this->validatedPassengerIds, true)) {
+            $this->validatedPassengerIds[] = $userId;
+        }
+        return $this;
+    }
+
+    public function getProblemReports(): array
+    {
+        return is_array($this->problemReports) ? $this->problemReports : [];
+    }
+
+    public function addProblemReport(int $userId, string $message): self
+    {
+        if (!is_array($this->problemReports)) {
+            $this->problemReports = [];
+        }
+
+        $this->problemReports[] = [
+            'userId' => $userId,
+            'message' => $message,
+            'date' => (new \DateTime())->format('Y-m-d H:i')
+        ];
 
         return $this;
     }

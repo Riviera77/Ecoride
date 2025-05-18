@@ -35,6 +35,26 @@
                         <td>{{ carpool.price }} €</td>
                         <td>
                             <a href="{{ path('app_carpooling_show', {id: carpool.id}) }}" class="btn btn-sm btn-outline-primary">Voir</a>
+
+                            {% set statut = carpool.status ? carpool.status|lower : 'à venir' %}
+
+                            {% if statut in ['à venir', 'ouvert'] %}
+                                <a href="{{ path('carpooling_start', {'id': carpool.id}) }}"
+                                class="btn btn-sm btn-success mt-1"
+                                onclick="return confirm('🚗 Es-tu sûr·e de vouloir démarrer ce trajet ?')">
+                                Démarrer
+                                </a>
+
+                            {% elseif statut in ['en cours', 'encours'] %}
+                                <a href="{{ path('carpooling_finish', {'id': carpool.id}) }}"
+                                class="btn btn-sm btn-warning mt-1"
+                                onclick="return confirm('🏁 Confirmer l\'arrivée à destination ?')">
+                                Arrivée à destination
+                                </a>
+
+                            {% elseif statut == 'terminé' %}
+                                <span class="badge bg-secondary mt-1">Trajet terminé</span>
+                            {% endif %}
                         </td>
                     </tr>
                 {% endfor %}

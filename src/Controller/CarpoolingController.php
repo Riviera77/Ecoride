@@ -2,10 +2,12 @@
 
 namespace App\Controller;
 
+use App\Entity\User;
 use App\Entity\Credit;
 use App\Entity\Carpooling;
 use App\Form\CarpoolingType;
 use App\Service\RatingService;
+use App\Form\ReportProblemType;
 use App\Form\CarpoolingFilterType;
 use App\Form\CarpoolingSearchType;
 use App\Repository\CarpoolingRepository;
@@ -276,5 +278,168 @@ final class CarpoolingController extends AbstractController
         $this->addFlash('success', 'Vous avez rejoint ce covoiturage avec succès 🚗🎉');
 
         return $this->redirectToRoute('app_user_dashboard');
+    }
+
+    #[Route('/start/{id}', name: 'carpooling_start')]
+    public function start(Carpooling $carpooling, EntityManagerInterface $em): Response
+    {
+        // verify if the user is the driver
+        if ($carpooling->getUsers() !== $this->getUser()) {
+            $this->addFlash('danger', 'Tu ne peux démarrer que tes propres trajets.');
+            return $this->redirectToRoute('app_user_dashboard');
+        }
+
+        $carpooling->setStatus('en cours');
+        $em->flush();
+
+        $this->addFlash('success', 'Le trajet a démarré.');
+        return $this->redirectToRoute('app_user_dashboard'); 
+    }
+
+    #[Route('/finish/{id}', name: 'carpooling_finish')]
+    public function finish(Carpooling $carpooling, EntityManagerInterface $em): Response
+    {
+        // verify if the user is the driver
+        if ($carpooling->getUsers() !== $this->getUser()) {
+        $this->addFlash('danger', 'Tu ne peux terminer que tes propres trajets.');
+        return $this->redirectToRoute('app_user_dashboard');
+        }
+
+        $carpooling->setStatus('terminé');
+        $em->flush();
+
+        $this->addFlash('success', 'Le trajet est terminé.');
+        return $this->redirectToRoute('app_user_dashboard');
+    }
+
+    // Road after the trip, only available after the trip is finished
+    #[Route('/confirm/{id}', name: 'carpooling_confirm')]
+    public function confirmTrip(Carpooling $carpooling): Response
+    {
+
+        $user = $this->getUser();
+
+        // Vérifie que le trajet est terminé
+        if ($carpooling->getStatus() !== 'terminé') {
+            $this->addFlash('warning', 'Ce trajet n\'est pas encore terminé.');
+            return $this->redirectToRoute('app_user_dashboard');
+        }
+
+        // Vérifie que l'utilisateur est passager de ce trajet
+        if (!$carpooling->getPassengers()->contains($user)) {
+            $this->addFlash('danger', 'Tu ne participes pas à ce covoiturage.');
+            return $this->redirectToRoute('app_user_dashboard');
+        }
+
+        return $this->render('carpooling/confirm.html.twig', [
+            'carpooling' => $carpooling,
+        ]);
+    }
+
+        // Route called by the page "confirm" to say that the trip is ok
+        #[Route('/confirm/{id}/success', name: 'carpooling_confirm_success', methods: ['POST'])]
+    public function confirmTripSuccess(Carpooling $carpooling, EntityManagerInterface $em): Response 
+    {
+        /** @var \App\Entity\User $user */
+        $user = $this->getUser();
+
+        // verify that the user is connected
+        if (!$user instanceof \App\Entity\User) {
+            $this->addFlash('danger', 'Tu dois être connecté pour valider ce trajet.');
+            return $this->redirectToRoute('app_login');
+        }
+
+        // verify that the carpooling is finished
+        if ($carpooling->getStatus() !== 'terminé') {
+        $this->addFlash('warning', 'Ce trajet n’est pas encore terminé.');
+        return $this->redirectToRoute('app_user_dashboard');
+        }
+
+        // verify that the user is a passenger
+        if (!$carpooling->getPassengers()->contains($user)) {
+        $this->addFlash('danger', 'Tu ne peux pas valider ce trajet.');
+        return $this->redirectToRoute('app_user_dashboard');
+        }
+
+        // add the user Id to the list of validations
+        /* dump($user); dd(get_class($user)); */
+        $carpooling->addValidatedPassengerId($user->getId());
+
+        // Verify if all passengers have validated
+        $allValidated = true;
+        foreach ($carpooling->getPassengers() as $passenger) {
+            if ($passenger instanceof \App\Entity\User) {
+                if (!in_array($passenger->getId(), $carpooling->getValidatedPassengerIds())) {
+                    $allValidated = false;
+                    break;
+                }
+            } else {
+                $allValidated = false; // sécurité si l'objet est corrompu
+                break;
+            }
+        }
+        // If all passengers have validated, debit the driver
+        if ($allValidated) {
+            // verify if there is a problem report
+            if (!empty($carpooling->getProblemReports())) {
+                $this->addFlash('warning', 'Un passager a signalé un problème. Le débit du chauffeur est suspendu jusqu’à traitement.');
+                return $this->redirectToRoute('app_user_dashboard');
+            }
+            // debit the driver
+            $credit = new Credit();
+            $credit->setUsers($carpooling->getUsers()); // chauffeur
+            $credit->setBalance(-2); // débit
+            $credit->setTransactionDate(new \DateTime());
+
+            $em->persist($credit);
+
+            $this->addFlash('success', '✅ Tous les passagers ont validé. Le chauffeur est débité de 2 crédits.');
+        }
+
+        $em->flush();
+        // add a flash message to inform the user and redirect to the dashboard
+        $this->addFlash('success', 'Merci pour ta confirmation !');
+        return $this->redirectToRoute('app_user_dashboard');
+    }
+
+        // route called ba the page "report_problem" to report a problem after the trip
+        #[Route('/confirm/{id}/report', name: 'carpooling_report_problem')]
+    public function reportProblem(Request $request, Carpooling $carpooling, EntityManagerInterface $em): Response 
+    {
+        /** @var \App\Entity\User $user */
+        $user = $this->getUser();
+
+        // verify that the user is connected
+        if (!$user instanceof \App\Entity\User) {
+            $this->addFlash('danger', 'Tu dois être connecté pour signaler un problème.');
+            return $this->redirectToRoute('app_login');
+        }
+
+        // verify that the user is a passenger of this carpooling
+        if (!$carpooling->getPassengers()->contains($user)) {
+            $this->addFlash('danger', 'Tu ne peux signaler un problème que pour un trajet auquel tu as participé.');
+            return $this->redirectToRoute('app_user_dashboard');
+        }
+
+        // create the form to report a problem
+        $form = $this->createForm(ReportProblemType::class);
+        $form->handleRequest($request);
+
+        // if the form is submitted and valid, add the report to the carpooling
+        if ($form->isSubmitted() && $form->isValid()) {
+            $data = $form->getData(); //recover the content of the message field
+            // save the report in the json field "problem_reports"
+            $carpooling->addProblemReport($user->getId(), $data['message']);
+            // save in the database
+            $em->flush();
+            // add a flash message to inform the user and redirect to the dashboard
+            $this->addFlash('success', 'Merci pour ton retour. Un membre de l’équipe examinera ton signalement.');
+            return $this->redirectToRoute('app_user_dashboard');
+        }
+        //display the form
+        return $this->render('carpooling/report_problem.html.twig', [
+            'carpooling' => $carpooling,
+            'form' => $form->createView(),
+        ]);
     }
 }

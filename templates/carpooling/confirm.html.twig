@@ -1,0 +1,27 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Confirmation du trajet{% endblock %}
+
+{% block body %}
+<div class="container mt-5">
+    <h1>🚗 Confirmation du trajet</h1>
+    <p>Trajet : <strong>{{ carpooling.departureAddress }} → {{ carpooling.arrivalAddress }}</strong></p>
+
+    <p>Merci de confirmer que ce trajet s’est bien déroulé :</p>
+
+    <div class="mt-4 d-flex gap-3">
+        <form method="post" action="{{ path('carpooling_validate_positive', {id: carpooling.id}) }}">
+            <button class="btn btn-success"
+                    onclick="return confirm('Tu confirmes que tout s’est bien passé ?')">
+                ✅ Oui, tout s’est bien passé
+            </button>
+        </form>
+
+        <form method="get" action="{{ path('carpooling_report_problem', {id: carpooling.id}) }}">
+            <button class="btn btn-danger">
+                ❌ Signaler un problème
+            </button>
+        </form>
+    </div>
+</div>
+{% endblock %}
