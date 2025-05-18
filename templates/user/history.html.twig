@@ -69,7 +69,9 @@
             <p>Aucun covoiturage pour le moment.</p>
         {% endif %}
 
-        <a href="{{ path('app_user_dashboard') }}">Retour</a>
+        <div class="text-center mt-5 me-5 pb-2">
+        <a href="{{ path('app_user_dashboard') }}" class="btn btn-primary btn-lg"> Retour</a>
+        </div>
     </div>
 
 {% endblock %}

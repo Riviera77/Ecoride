@@ -30,6 +30,9 @@
                                 <a class="nav-link" href="{{ path('employee_index') }}">Gérer les employés</a>
                             </li>
                         {% endif %}
+                        {% if is_granted('ROLE_EMPLOYEE') %}
+                            <a href="{{ path('employee_dashboard') }}">Espace employé</a>
+                        {% endif %}
 
                         <li class="nav-item">
                             <form action="{{ path('app_logout') }}" method="post">

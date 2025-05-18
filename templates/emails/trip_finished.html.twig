@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="fr">
+    <head>
+        <meta charset="UTF-8">
+        <title>Trajet terminé</title>
+    </head>
+    <body style="font-family: sans-serif; line-height: 1.6;">
+        <h2>Bonjour {{ username }} 👋</h2>
+
+        <p>Le trajet auquel vous avez participé vient de se terminer.</p>
+
+        <p>
+        Merci de vous rendre sur votre espace personnel pour confirmer que tout s’est bien passé,
+        ou signaler un problème si nécessaire.
+        </p>
+
+        <p style="text-align: center; margin: 30px 0;">
+        <a href="{{ url('app_user_dashboard') }}"
+            style="padding: 10px 20px; background-color: #4CAF50; color: white; text-decoration: none; border-radius: 5px;">
+            👉 Accéder à mon espace
+        </a>
+        </p>
+
+        <p>Merci pour votre confiance,<br>L’équipe EcoRide 🌱</p>
+    </body>
+</html>
