@@ -50,6 +50,9 @@ class AppCustomAuthenticator extends AbstractLoginFormAuthenticator
         if (in_array('ROLE_ADMIN', $token->getRoleNames())) {
             return new RedirectResponse($this->urlGenerator->generate('admin_dashboard'));
         }
+        if (in_array('ROLE_EMPLOYEE', $token->getRoleNames())) {
+        return new RedirectResponse($this->urlGenerator->generate('employee_dashboard'));
+        }
         return new RedirectResponse($this->urlGenerator->generate('app_user_dashboard'));
     }
 

@@ -1,0 +1,84 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Avis en attente{% endblock %}
+
+{% block body %}
+    <div class="container mt-4">
+
+        {# Bloc messages flash uniquement pour cette page #}
+        <div class="container mt-3">
+            {% for label, messages in app.flashes %}
+                {% for message in messages %}
+                    <div class="alert alert-{{ label }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endfor %}
+            {% endfor %}
+        </div>
+
+        <h1>🔍 Modération des avis</h1>
+
+        {% if reviews is empty %}
+            <p>Aucun avis en attente de validation.</p>
+        {% else %}
+            <table class="table table-striped mt-3">
+                <thead>
+                    <tr>
+                        <th>Note</th>
+                        <th>Commentaire</th>
+                        <th>Passager</th>
+                        <th>Chauffeur</th>
+                        <th>Départ</th>
+                        <th>Arrivée</th>
+                        <th>Date</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for review in reviews %}
+                        <tr>
+                            <td>{{ review.rating }}</td>
+                            <td>{{ review.comment }}</td>
+                            <td>
+                                {% if review.author %}
+                                    {{ review.author.username }}<br>
+                                    <small>{{ review.author.email }}</small>
+                                {% else %}
+                                    <em>Inconnu</em>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if review.driver %}
+                                    {{ review.driver.username }}<br>
+                                    <small>{{ review.driver.email }}</small>
+                                {% else %}
+                                    <em>Inconnu</em>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {{ review.trip.departureAddress ?? 'N/A' }}
+                            </td>
+                            <td>
+                                {{ review.trip.arrivalAddress ?? 'N/A' }}
+                            </td>
+                            <td>
+                                {% if review.trip.departureDate is defined %}
+                                    {{ review.trip.departureDate|date('d/m/Y') }}
+                                    –
+                                    {{ review.trip.arrivalDate|date('d/m/Y') }}
+                                {% else %}
+                                    <em>Non précisée</em>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <a href="{{ path('employee_review_approve', { id: review.id }) }}" class="btn btn-success btn-sm">✅ Valider</a>
+                                <a href="{{ path('employee_review_reject', { id: review.id }) }}" class="btn btn-danger btn-sm">❌ Rejeter</a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% endif %}
+    </div>
+{% endblock %}

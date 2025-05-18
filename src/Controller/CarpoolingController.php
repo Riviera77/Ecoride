@@ -428,10 +428,14 @@ final class CarpoolingController extends AbstractController
         // if the form is submitted and valid, add the report to the carpooling
         if ($form->isSubmitted() && $form->isValid()) {
             $data = $form->getData(); //recover the content of the message field
-            // save the report in the json field "problem_reports"
-            $carpooling->addProblemReport($user->getId(), $data['message']);
-            // save in the database
-            $em->flush();
+            
+            // ✅ Enregistre le signalement dans MongoDB via IncidentService
+            $incidentService->addIncident(
+            $carpooling->getId(),         // ID du covoiturage concerné
+            $user->getId(),               // ID de l'utilisateur qui signale
+            $data['message']              // Message saisi dans le formulaire
+        );
+
             // add a flash message to inform the user and redirect to the dashboard
             $this->addFlash('success', 'Merci pour ton retour. Un membre de l’équipe examinera ton signalement.');
             return $this->redirectToRoute('app_user_dashboard');

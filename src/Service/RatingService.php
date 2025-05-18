@@ -4,6 +4,7 @@ namespace App\Service;
 
 use MongoDB\Client;
 use MongoDB\Collection;
+use MongoDB\BSON\ObjectId;
 use MongoDB\BSON\UTCDateTime;
 
 class RatingService
@@ -57,14 +58,44 @@ class RatingService
     }
 
     // Add a rating and a comment for a specific driver
-    public function addRating(int $driverId, int $carpoolingId, float $rating, string $comment): void
+    public function addRating(int $driverId, int $authorId, int $carpoolingId, float $rating, string $comment): void
     {
         $this->collection->insertOne([
             'driverId' => (string) $driverId,
+            'authorId' => (string) $authorId,
             'carpoolingId' => (string) $carpoolingId,
             'rating' => $rating,
             'comment' => $comment,
+            'status' => 'pending',
             'createdAt' => "2025-12-02T10:00:00Z"
         ]);
+    }
+
+    // Get all reviews with status 'pending'
+    public function getPendingReviews(): array
+    {
+        $results = $this->collection->find([
+            'status' => 'pending'
+        ]);
+
+        return $this->toArray($results);
+    }
+
+    // Approve a review
+    public function approveReview(string $id): void
+    {
+        $this->collection->updateOne(
+            ['_id' => new ObjectId($id)],
+            ['$set' => ['status' => 'approved']]
+        );
+    }
+
+    // reject a review
+    public function rejectReview(string $id): void
+    {
+        $this->collection->updateOne(
+            ['_id' => new ObjectId($id)],
+            ['$set' => ['status' => 'rejected']]
+        );
     }
 }

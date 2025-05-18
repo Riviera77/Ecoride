@@ -1,0 +1,14 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Espace employé{% endblock %}
+
+{% block body %}
+<div class="container mt-4">
+    <h1>Bienvenue dans votre espace employé 👩‍💼</h1>
+
+    <ul class="mt-3">
+        <li><a href="{{ path('employee_review_list') }}">🔍 Valider les avis en attente</a></li>
+        <li><a href="{{ path('employee_bad_trips') }}">🚨 Trajets signalés</a></li>
+    </ul>
+</div>
+{% endblock %}
