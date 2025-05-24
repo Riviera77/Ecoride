@@ -1,0 +1,58 @@
+
+name: Run Symfony Tests
+
+# Déclencheurs : push ou pull request sur les branches main et develop
+on:
+  push:
+    branches: [ main, develop, feature/tests ]
+  pull_request:
+    branches: [ main, develop, feature/tests ]
+
+jobs:
+  tests:
+    # OS de la machine virtuelle utilisée
+    runs-on: ubuntu-latest
+
+    # Services nécessaires pour le job : ici PostgreSQL
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: symfony
+          POSTGRES_PASSWORD: symfony
+          POSTGRES_DB: ecoride_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      # Étape 1 : Récupération du code depuis le dépôt GitHub
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      # Étape 2 : Installation de PHP + extensions nécessaires
+      - name: Setup PHP with extensions
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          extensions: pdo_pgsql, mbstring, intl
+          coverage: none
+
+      # Étape 3 : Installation de Composer
+      - name: Install Composer dependencies
+        run: composer install --no-progress --prefer-dist --optimize-autoloader
+
+      # Étape 4 : Création du schéma de base de données pour les tests
+      - name: Prepare database
+        run: |
+          php bin/console doctrine:database:create --env=test --if-not-exists
+          php bin/console doctrine:schema:create --env=test
+          php bin/console doctrine:fixtures:load --env=test --no-interaction
+
+      # Étape 5 : Exécution des tests PHPUnit
+      - name: Run PHPUnit
+        run: ./vendor/bin/phpunit
