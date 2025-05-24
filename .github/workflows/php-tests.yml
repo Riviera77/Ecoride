@@ -48,7 +48,10 @@ jobs:
 
       # Étape 4 : Installation de Composer
       - name: Install Composer dependencies
-        run: composer install --no-progress --prefer-dist --optimize-autoloader
+        run: composer install --no-scripts --no-progress --prefer-dist --optimize-autoloader
+
+      - name: Clear Symfony cache
+        run: php bin/console cache:clear --env=test
 
       # Étape 5 : Création du schéma de base de données pour les tests
       - name: Prepare database
