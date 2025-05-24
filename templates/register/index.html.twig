@@ -6,15 +6,39 @@
 <div class="container mt-5">
     <h1 class="mb-4">Créer un compte</h1>
 
-    {{ form_start(registerForm) }}
-        {{ form_row(registerForm.username) }}
-        {{ form_row(registerForm.email) }}
-        {{ form_row(registerForm.plainPassword.first) }}
-        {{ form_row(registerForm.plainPassword.second) }}
+
+    {{ form_errors(registerForm) }}
+    {{ form_start(registerForm, { method: 'POST' }) }}
+        {# Affiche les erreurs générales du formulaire (ex : email déjà utilisé) #}
+        {% for error in registerForm.vars.errors %}
+            <div class="alert alert-danger">{{ error.message }}</div>
+        {% endfor %}
+
+        <div class="mb-3">
+            {{ form_label(registerForm.username) }}
+            {{ form_widget(registerForm.username, {'attr': {'class': 'form-control'}}) }}
+            {{ form_errors(registerForm.username) }}
+        </div>
+        <div class="mb-3">
+            {{ form_label(registerForm.email) }}
+            {{ form_widget(registerForm.email, {'attr': {'class': 'form-control'}}) }}
+            {{ form_errors(registerForm.email) }}
+        </div>
+        <div class="mb-3">
+            {{ form_label(registerForm.plainPassword.first) }}
+            {{ form_widget(registerForm.plainPassword.first, {'attr': {'class': 'form-control'}}) }}
+            {{ form_errors(registerForm.plainPassword.first) }}
+        </div>
+        <div class="mb-3">
+            {{ form_label(registerForm.plainPassword.second) }}
+            {{ form_widget(registerForm.plainPassword.second, {'attr': {'class': 'form-control'}}) }}
+            {{ form_errors(registerForm.plainPassword.second) }}
+        </div>
         <button type="submit" class="btn btn-primary mt-3">S'inscrire</button>
         <p class="mt-3 text-center">
         Déjà inscrit ? <a href="{{ path('app_login') }}">Connecte-toi ici</a>
         </p>
+    {{ form_rest(registerForm) }}
     {{ form_end(registerForm) }}
 </div>
 {% endblock %}

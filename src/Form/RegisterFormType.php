@@ -26,6 +26,9 @@ class RegisterFormType extends AbstractType
             ])
             ->add('email', EmailType::class, [
                 'label' => 'Adresse email',
+                'constraints' => [
+                    new NotBlank(['message' => 'Merci de saisir une adresse email.']),
+                ],
                 'attr' => [
                     'placeholder' => 'nom@mail.com',
                 ],
@@ -68,10 +71,10 @@ class RegisterFormType extends AbstractType
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-        'data_class' => User::class,
-        'csrf_protection' => true,
-        'csrf_field_name' => '_token',
-        'csrf_token_id'   => 'register_form', // nom libre mais doit être unique
+            'data_class' => User::class,
+            'csrf_protection' => true,
+            'csrf_field_name' => '_token',
+            'csrf_token_id'   => 'register_form', // nom libre mais doit être unique
     ]);
     }
 }

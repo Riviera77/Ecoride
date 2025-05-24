@@ -42,9 +42,14 @@
 * [![Symfony][symfony-badge]][symfony-url]
 * [![Bootstrap][bootstrap-badge]][bootstrap-url]
 * [![Bootswatch][bootswatch-badge]][bootswatch-url]
-* [![Symfony Adminer][symfonyadminer-badge]][symfonyadminer-url]
-* [![Mongo Express][mongoexpress-badge]][mongoexpress-url]
+* ![MongoDB Compass](https://img.shields.io/badge/MongoDB%20Compass-UI%20Tool-47A248?logo=mongodb&logoColor=white&style=for-the-badge)
+* ![Docker](https://img.shields.io/badge/Docker-Containerized-blue?logo=docker&style=for-the-badge)
 
+<!-- CI/CD & Déploiement -->
+>CI/CD & Déploiement
+
+* ![GitHub Actions](https://img.shields.io/badge/GitHub%20Actions-CI/CD-2088FF?logo=githubactions&style=for-the-badge)
+* ![Heroku](https://img.shields.io/badge/Heroku-Deployed-430098?logo=heroku&logoColor=white&style=for-the-badge)
 
 #
 <!-- GETTING STARTED -->

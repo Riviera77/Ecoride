@@ -402,7 +402,7 @@ final class CarpoolingController extends AbstractController
         return $this->redirectToRoute('app_user_dashboard');
     }
 
-        // route called ba the page "report_problem" to report a problem after the trip
+        // route called by the page carpooling/"report_problem" to report a problem after the trip
         #[Route('/confirm/{id}/report', name: 'carpooling_report_problem')]
     public function reportProblem(Request $request, Carpooling $carpooling, EntityManagerInterface $em): Response 
     {
@@ -429,7 +429,7 @@ final class CarpoolingController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $data = $form->getData(); //recover the content of the message field
             
-            // ✅ Enregistre le signalement dans MongoDB via IncidentService
+            // Enregistre le signalement dans MongoDB via IncidentService
             $incidentService->addIncident(
             $carpooling->getId(),         // ID du covoiturage concerné
             $user->getId(),               // ID de l'utilisateur qui signale
