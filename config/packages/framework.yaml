@@ -7,7 +7,7 @@ framework:
         enabled: true
 
     # Protection CSRF globale
-    csrf_protection: false
+    csrf_protection: true
 
     #esi: true
     #fragments: true
