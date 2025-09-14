@@ -3,20 +3,18 @@
 <!-- PROJECT LOGO -->
 <br />
 <div align="center">
-  <a href="https://github.com/Riviera77/Ecoride_app>
-    <img src="images/logo.png" alt="Logo" width="80" height="80">
-  </a>
+  <img src="public/img/logo.png" alt="Logo" width="80" height="80">
 
 # <p align="center">Ecoride</p>
   
 
   <p align="center">
-<h3>This is an application for eco-friendly carpooling.</3>
+<h3>This is an application for eco-friendly carpooling</3>
     <br />
-    <a href="https://github.com/github_username/repo_name"><strong>Explore the docs »</strong></a>
+    <a href="https://github.com/Riviera77/Ecoride"><strong>Explore the docs »</strong></a>
     <br />
     <br />
-    <a href="https://github.com/github_username/repo_name">View Demo</a>
+    <a href="https://github.com/Riviera77/Ecoride">View Demo</a>
   </p>
 </div>
 
@@ -42,9 +40,14 @@
 * [![Symfony][symfony-badge]][symfony-url]
 * [![Bootstrap][bootstrap-badge]][bootstrap-url]
 * [![Bootswatch][bootswatch-badge]][bootswatch-url]
-* [![Symfony Adminer][symfonyadminer-badge]][symfonyadminer-url]
-* [![Mongo Express][mongoexpress-badge]][mongoexpress-url]
+* ![MongoDB Compass](https://img.shields.io/badge/MongoDB%20Compass-UI%20Tool-47A248?logo=mongodb&logoColor=white&style=for-the-badge)
+* ![Docker](https://img.shields.io/badge/Docker-Containerized-blue?logo=docker&style=for-the-badge)
 
+<!-- CI/CD & Déploiement -->
+>CI/CD & Déploiement
+
+* ![GitHub Actions](https://img.shields.io/badge/GitHub%20Actions-CI/CD-2088FF?logo=githubactions&style=for-the-badge)
+* ![Heroku](https://img.shields.io/badge/Heroku-Deployed-430098?logo=heroku&logoColor=white&style=for-the-badge)
 
 #
 <!-- GETTING STARTED -->
@@ -64,13 +67,13 @@ and [Docker](https://docs.docker.com/get-started/get-docker/) on your machine
 Clone the repo en HTTPS
 
    ```sh
-   git clone https://github.com/github_username/repo_name.git 
+   git clone https://github.com/Riviera77/Ecoride.git 
 ```
    
  Or if you prefer, clone the repo en SSH
 
    ```sh
-   git clone git@github.com:Riviera77/Ecoride_app.git
+   git clone git@github.com:Riviera77/Ecoride.git
 ```
 to finish, launch docker 
 
@@ -81,7 +84,7 @@ to finish, launch docker
 <!-- CONTACT -->
 ## Contact
 
-Ingrid Freguis - [Github](https://github.com/Riviera77/Ecoride_app) 
+Ingrid Freguis - [Github](https://github.com/Riviera77/Ecoride) 
 
 Trello Link: [Trello](https://trello.com/invite/b/67588c44b9d4153ab6e9819b/ATTI42a2b672151f6198d2f43841f7e6e8b793709EF9/ecoride)
 
