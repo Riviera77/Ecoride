@@ -22,6 +22,9 @@ class AppFixtures extends Fixture
     
     public function load(ObjectManager $manager): void
     {
+        //CI: afficher CI: logs GitHub Actions, voir si fixtures bien exécutées
+        echo "⚙️ Chargement des fixtures OK\n";
+
         // --- Create a user ---
         $user1 = new User();
         $user1->setEmail("vanessa13@example.com");
