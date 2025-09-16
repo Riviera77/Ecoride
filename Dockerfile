@@ -1,31 +1,39 @@
-# Dockerfile
-FROM php:8.3.20-fpm-alpine
+# Dockerfile (Heroku)
+FROM php:8.3.20-cli-alpine
 
-# Dépendances PHP
+# Dépendances PHP utiles pour Symfony
 RUN apk add --no-cache \
-    zlib-dev libxml2-dev libzip-dev unzip \
-    php-pear autoconf gcc g++ make musl-dev \
-    postgresql-dev nodejs npm nginx supervisor \
-    && docker-php-ext-install zip pdo_pgsql pgsql opcache intl bcmath \
+    zlib-dev \
+    libxml2-dev \
+    libzip-dev \
+    unzip \
+    postgresql-dev \
+    nodejs \
+    npm \
+    && docker-php-ext-install \
+        zip \
+        pdo_pgsql \
+        pgsql \
+        opcache \
+        intl \
+        bcmath \
     && pecl install apcu mongodb \
     && docker-php-ext-enable apcu mongodb \
     && rm -rf /tmp/pear
 
-# Installe Composer
+# Installer Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
+# Répertoire de travail
 WORKDIR /var/www/html
+
+# Copier l’application Symfony
 COPY . .
 
-# Nginx config
-COPY docker/nginx.heroku.conf /etc/nginx/conf.d/default.conf
-
-# Supervisord config
-COPY docker/supervisord.conf /etc/supervisord.conf
-
-# Variables Heroku
+# Exposer le port Heroku ($PORT est injecté par la plateforme)
 EXPOSE 8080
-ENV PORT=8080
 
-# Commande de lancement
-CMD ["/usr/bin/supervisord","-c","/etc/supervisord.conf"]
+# Lancer Symfony avec le serveur PHP interne
+# - 0.0.0.0:$PORT → pour écouter sur le port Heroku
+# -t public → Symfony sert depuis le dossier public/
+CMD ["php", "-S", "0.0.0.0:8080", "-t", "public"]
