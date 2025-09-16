@@ -3,6 +3,3 @@ build:
     web: Dockerfile
   config:
     APP_ENV: prod
-
-run:
-  web: php -S 0.0.0.0:$PORT -t public

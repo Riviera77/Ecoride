@@ -1,6 +1,10 @@
 # Dockerfile (Heroku)
 FROM php:8.3.20-cli-alpine
 
+# Vars Composer
+ENV COMPOSER_ALLOW_SUPERUSER=1
+ENV COMPOSER_HOME=/composer
+
 # Dépendances PHP utiles pour Symfony
 RUN apk add --no-cache \
     zlib-dev \
@@ -38,6 +42,9 @@ COPY . .
 
 # Installer les dépendances Symfony (prod only)
 RUN composer install --no-dev --optimize-autoloader --no-interaction
+
+# Permissions cache/log Symfony
+RUN mkdir -p var && chown -R www-data:www-data var
 
 # Exposer le port Heroku ($PORT est injecté par la plateforme)
 EXPOSE 8080
