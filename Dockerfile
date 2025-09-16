@@ -10,6 +10,12 @@ RUN apk add --no-cache \
     postgresql-dev \
     nodejs \
     npm \
+    autoconf \
+    g++ \
+    make \
+    gcc \
+    musl-dev \
+    php-pear \
     && docker-php-ext-install \
         zip \
         pdo_pgsql \
