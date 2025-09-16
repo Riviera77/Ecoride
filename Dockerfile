@@ -33,14 +33,11 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 # Répertoire de travail
 WORKDIR /var/www/html
 
-# Étape 1 : copier uniquement les fichiers composer (meilleur cache)
-COPY composer.json composer.lock ./
-
-# Étape 2 : installer les dépendances Symfony (prod only)
-RUN composer install --no-dev --optimize-autoloader --no-interaction
-
 # Copier l’application Symfony
 COPY . .
+
+# Installer les dépendances Symfony (prod only)
+RUN composer install --no-dev --optimize-autoloader --no-interaction
 
 # Exposer le port Heroku ($PORT est injecté par la plateforme)
 EXPOSE 8080
