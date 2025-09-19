@@ -4,6 +4,11 @@ use Symfony\Component\Dotenv\Dotenv;
 
 require dirname(__DIR__).'/vendor/autoload.php';
 
-if (method_exists(Dotenv::class, 'bootEnv')) {
-    (new Dotenv())->bootEnv(dirname(__DIR__).'/.env');
+// Ne charger .env que si APP_ENV non défini (Heroku le définit)
+if (!isset($_SERVER['APP_ENV']) && !isset($_ENV['APP_ENV'])) {
+    if (method_exists(Dotenv::class, 'bootEnv')) {
+        (new Dotenv())->bootEnv(dirname(__DIR__).'/.env');
+    } else {
+        (new Dotenv())->loadEnv(dirname(__DIR__).'/.env');
+    }
 }

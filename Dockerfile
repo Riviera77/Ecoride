@@ -24,7 +24,11 @@ COPY . .
 
 # Composer en mode production
 RUN git config --global --add safe.directory /var/www/html \
-    && composer install --no-dev --optimize-autoloader --no-interaction --no-scripts
+    && composer install --no-dev --optimize-autoloader --no-interaction --no-scripts \
+    && composer dump-autoload --optimize
+
+# Forcer le cache Symfony en prod
+RUN APP_ENV=prod APP_DEBUG=0 php bin/console cache:clear --no-warmup || true
 
 # On supprime carrément les auto-scripts pour le build
 RUN composer dump-autoload --optimize
