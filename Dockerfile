@@ -4,7 +4,7 @@ FROM php:8.3-fpm-alpine
 # Installer dépendances
 RUN apk add --no-cache \
     bash curl unzip git \
-    nginx supervisor \
+    nginx supervisor gettext \
     libzip-dev libpng-dev icu-dev postgresql-dev \
     autoconf make g++ gcc musl-dev php-pear \
     && docker-php-ext-install intl pdo_pgsql zip bcmath opcache \
@@ -36,8 +36,8 @@ RUN composer dump-autoload --optimize
 # Générer cache Symfony en prod
 RUN APP_ENV=prod APP_DEBUG=0 php bin/console cache:clear --no-warmup || true
 
-# Nginx conf
-COPY docker/nginx.heroku.conf /etc/nginx/http.d/default.conf
+# Copy the Nginx template into the **http.d** directory
+COPY docker/nginx.conf.template /etc/nginx/http.d/default.conf.template
 
 # Supervisor conf
 COPY docker/supervisord.conf /etc/supervisord.conf
@@ -48,5 +48,5 @@ RUN mkdir -p var && chown -R www-data:www-data var
 # Exposer le port Heroku ($PORT est injecté par la plateforme)
 EXPOSE 8080
 
-# Lancer Symfony et Nginx via Supervisor
+# démarrer supervisor
 CMD ["/usr/bin/supervisord","-c","/etc/supervisord.conf"]
