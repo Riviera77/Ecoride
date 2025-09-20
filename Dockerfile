@@ -49,6 +49,8 @@ RUN mkdir -p var && chown -R www-data:www-data var
 EXPOSE 8080
 
 COPY docker/php-fpm.env.conf /usr/local/etc/php-fpm.d/zz-env.conf
+# Rendre variables_order=EGPCS aussi pour le PHP CLI
+RUN printf "variables_order=EGPCS\n" > /usr/local/etc/php/conf.d/zz-variables.ini
 
 # démarrer supervisor
 CMD ["/usr/bin/supervisord","-c","/etc/supervisord.conf"]
