@@ -48,5 +48,7 @@ RUN mkdir -p var && chown -R www-data:www-data var
 # Exposer le port Heroku ($PORT est injecté par la plateforme)
 EXPOSE 8080
 
+COPY docker/php-fpm.env.conf /usr/local/etc/php-fpm.d/zz-env.conf
+
 # démarrer supervisor
 CMD ["/usr/bin/supervisord","-c","/etc/supervisord.conf"]
