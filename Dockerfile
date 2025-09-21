@@ -1,7 +1,7 @@
 # Dockerfile (Heroku)
 FROM php:8.3-fpm-alpine
 
-# Installer dépendances
+# 1) Paquets nécessaires (nginx, supervisord, envsubst) + extensions PHP
 RUN apk add --no-cache \
     bash curl unzip git \
     nginx supervisor gettext \
@@ -13,44 +13,34 @@ RUN apk add --no-cache \
     && apk del autoconf make g++ gcc musl-dev php-pear \
     && rm -rf /tmp/pear
 
-# Composer
+# 2) Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# Dossier de travail
+# 3) Dossier de travail
 WORKDIR /var/www/html
-
 # Copier projet
 COPY . .
 
-# Composer en mode production
+# 4) Dépendances PHP prod (sans scripts) + autoload optimisé
 RUN git config --global --add safe.directory /var/www/html \
     && composer install --no-dev --optimize-autoloader --no-interaction --no-scripts \
     && composer dump-autoload --optimize
 
-# Forcer le cache Symfony en prod
-RUN APP_ENV=prod APP_DEBUG=0 php bin/console cache:clear --no-warmup || true
-
-# On supprime carrément les auto-scripts pour le build
-RUN composer dump-autoload --optimize
-
-# Générer cache Symfony en prod
-RUN APP_ENV=prod APP_DEBUG=0 php bin/console cache:clear --no-warmup || true
-
-# Copy the Nginx template into the **http.d** directory
+# 5) Copy the Nginx template into the **http.d** directory
 COPY docker/nginx.conf.template /etc/nginx/http.d/default.conf.template
-
 # Supervisor conf
 COPY docker/supervisord.conf /etc/supervisord.conf
 
-# Créer var/cache et var/log avec bons droits
+# 6) Créer var/cache et var/log avec bons droits
 RUN mkdir -p var && chown -R www-data:www-data var
 
-# Exposer le port Heroku ($PORT est injecté par la plateforme)
+# 7) Exposer le port Heroku ($PORT est injecté par la plateforme)
 EXPOSE 8080
 
+# 8) PHP-FPM : expose les variables d'env au runtime
 COPY docker/php-fpm.env.conf /usr/local/etc/php-fpm.d/zz-env.conf
 # Rendre variables_order=EGPCS aussi pour le PHP CLI
 RUN printf "variables_order=EGPCS\n" > /usr/local/etc/php/conf.d/zz-variables.ini
 
-# démarrer supervisor
+# 9) démarrer supervisor
 CMD ["/usr/bin/supervisord","-c","/etc/supervisord.conf"]
