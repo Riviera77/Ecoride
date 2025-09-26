@@ -31,3 +31,6 @@ docker/db/data/
 ###< Docker ###
 
 .DS_Store
+backups/
+*.dump
+*.sql
