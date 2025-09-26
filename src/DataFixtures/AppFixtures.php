@@ -156,17 +156,20 @@ class AppFixtures extends Fixture
         $manager->persist($carpooling3);
 
         // --- Create credits ---
-        $credit1 = new Credit($user1);
+        $credit1 = new Credit();
+        $credit1->setUsers($user1);
         $credit1->setBalance(20);
         $credit1->setTransactionDate(new \DateTime('2025-11-01'));
         $manager->persist($credit1);
 
-        $credit2 = new Credit($user2);
+        $credit2 = new Credit();
+        $credit2->setUsers($user2);
         $credit2->setBalance(16);
         $credit2->setTransactionDate(new \DateTime('2025-11-01'));
         $manager->persist($credit2);
 
-        $credit3 = new Credit($user3);
+        $credit3 = new Credit();
+        $credit3->setUsers($user3);
         $credit3->setBalance(10);
         $credit3->setTransactionDate(new \DateTime('2025-11-01'));
         $manager->persist($credit3);
