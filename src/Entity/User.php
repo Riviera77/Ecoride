@@ -67,7 +67,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     /**
      * @var Collection<int, Carpooling>
      */
-    #[ORM\OneToMany(targetEntity: Carpooling::class, mappedBy: 'passengers')]
+    #[ORM\ManyToMany(targetEntity: Carpooling::class, mappedBy: 'passengers')]
     private Collection $carpoolingsAsPassenger;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
