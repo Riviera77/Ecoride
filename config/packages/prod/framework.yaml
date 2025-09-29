@@ -1,0 +1,13 @@
+framework:
+  # Only loaded in APP_ENV=prod
+  # 1) trust proxy Heroku and these X-Forwarded-*
+  trusted_proxies: '%env(string:TRUSTED_PROXIES)%'
+  trusted_headers: [x-forwarded-for, x-forwarded-host, x-forwarded-proto, x-forwarded-port, x-forwarded-prefix]
+
+# 2) limit the hosts allowed
+  trusted_hosts: '%env(string:TRUSTED_HOSTS)%'
+
+  # 3) Cookies of session correct behind HTTPS
+  session:
+    cookie_secure: auto   # Secure in HTTPS (Heroku), not required locally
+    cookie_samesite: lax

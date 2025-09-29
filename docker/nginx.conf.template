@@ -15,7 +15,7 @@ server {
         include fastcgi_params;
         fastcgi_pass 127.0.0.1:9000;  # PHP-FPM dans le même conteneur
         fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
-        fastcgi_param HTTPS off;
+        fastcgi_param HTTPS on;
     }
 
     location ~* \.(jpg|jpeg|png|gif|ico|css|js|woff|woff2|ttf|svg)$ {
