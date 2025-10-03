@@ -6,6 +6,7 @@ use App\Entity\User;
 use App\Entity\Credit;
 use App\Entity\Carpooling;
 use App\Form\CarpoolingType;
+use App\Service\IncidentService;
 use App\Service\RatingService;
 use App\Form\ReportProblemType;
 use App\Form\CarpoolingFilterType;
@@ -28,7 +29,7 @@ final class CarpoolingController extends AbstractController
         $carpoolings = [];
         $suggestions = [];
 
-        // 1. Create and treate search form
+        // 1. Create and handle search form
         $searchForm = $this->createForm(CarpoolingSearchType::class, null, [
             'method' => 'GET',
         ]);
@@ -46,7 +47,7 @@ final class CarpoolingController extends AbstractController
             }
         }
 
-        // 2. Create and treatment filter form (always instantiated)
+        // 2. Create and handle filter form (always instantiated)
         $filterForm = $this->createForm(CarpoolingFilterType::class, null, [
             'method' => 'GET'
         ]);
@@ -55,7 +56,7 @@ final class CarpoolingController extends AbstractController
         // Data of filter
         $filterData = $request->query->all('carpooling_filter');
 
-        // if filter is submitted, relaunch the first search, then apply the filter
+        // if filter is submitted, re-run base search, then apply the filter
         if (!empty(array_filter($filterData))) {
             // if carpoolings not search yet, I recover it
             if (empty($carpoolings) && !empty($searchData)) {
@@ -70,6 +71,16 @@ final class CarpoolingController extends AbstractController
         // 3. Generation of the URL for the filter form (action with search settings)
         $queryString = http_build_query(['carpooling_search' => $searchData]);
         $filterFormAction = $this->generateUrl('app_carpooling_index') . '?' . $queryString;
+
+        // ---- Add : if AJAX, return only partial results ----
+        if ($request->isXmlHttpRequest()) {
+            return $this->render('carpooling/_results.html.twig', [
+                'carpoolings'      => $carpoolings,
+                'suggestions'      => $suggestions,
+                'filterForm'       => count($carpoolings) > 0 ? $filterForm->createView() : null,
+                'filterFormAction' => $filterFormAction,
+            ]);
+        }
 
         return $this->render('carpooling/index.html.twig', [
             'form' => $searchForm->createView(),
@@ -344,7 +355,7 @@ final class CarpoolingController extends AbstractController
         $user = $this->getUser();
 
         // verify that the user is connected
-        if (!$user instanceof \App\Entity\User) {
+        if (!$user instanceof User) {
             $this->addFlash('danger', 'Tu dois être connecté pour valider ce trajet.');
             return $this->redirectToRoute('app_login');
         }
@@ -368,7 +379,7 @@ final class CarpoolingController extends AbstractController
         // Verify if all passengers have validated
         $allValidated = true;
         foreach ($carpooling->getPassengers() as $passenger) {
-            if ($passenger instanceof \App\Entity\User) {
+            if ($passenger instanceof User) {
                 if (!in_array($passenger->getId(), $carpooling->getValidatedPassengerIds())) {
                     $allValidated = false;
                     break;
@@ -404,13 +415,18 @@ final class CarpoolingController extends AbstractController
 
         // route called by the page carpooling/"report_problem" to report a problem after the trip
         #[Route('/confirm/{id}/report', name: 'carpooling_report_problem')]
-    public function reportProblem(Request $request, Carpooling $carpooling, EntityManagerInterface $em): Response 
+    public function reportProblem(
+        Request $request, 
+        Carpooling $carpooling, 
+        EntityManagerInterface $em, 
+        IncidentService $incidentService
+        ): Response 
     {
         /** @var \App\Entity\User $user */
         $user = $this->getUser();
 
         // verify that the user is connected
-        if (!$user instanceof \App\Entity\User) {
+        if (!$user instanceof User) {
             $this->addFlash('danger', 'Tu dois être connecté pour signaler un problème.');
             return $this->redirectToRoute('app_login');
         }
