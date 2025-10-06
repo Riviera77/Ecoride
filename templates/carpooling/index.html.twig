@@ -8,27 +8,6 @@
         Nous avons le trajet qu'il vous faut !</h1>
 </div>
 
-{# search form asynchrone #}
-{# <section class="container my-4">
-    <h5>Recherche asynchrone</h5>
-    <form id="async-search" class="row g-2">
-        <div class="col-sm-5">
-        <label class="form-label" for="from">Départ</label>
-        <input id="from" name="from" class="form-control" placeholder="Paris" required>
-        </div>
-        <div class="col-sm-5">
-        <label class="form-label" for="to">Arrivée</label>
-        <input id="to" name="to" class="form-control" placeholder="Lyon" required>
-        </div>
-        <div class="col-sm-2 d-flex align-items-end">
-        <button class="btn btn-outline-primary w-100" type="submit">Chercher</button>
-        </div>
-    </form>
-
-    <div id="async-results" class="mt-3"></div>
-</section> #}
-
-
 {# search form #}
 <div class="container px-4 py-5 my-5 text-center align-items-center rounded-3 border shadow-lg">
     <div class="p-3 p-lg-6 pt-lg-3">
@@ -41,28 +20,25 @@
         }) }}
             {{ form_errors(form) }}
 
-            <div class="col-lg-4 col-md-12 col-sm-12 mb-3">
-                {# <label class="form-label text-primary"><i class="bi bi-geo-alt"></i> Ville de départ</label> #}
+            <div class="col-12 col-md-6 col-lg-4">
                 {# aucun risque d'injection en utilisant un emoji Unicode(chaine de texte brut), pas de HTML ou JS #}
                 {{ form_label(form.departureAddress, '📍 Ville de départ', {'label_attr': {'class': 'form-label text-primary'}}) }}
                 {{ form_widget(form.departureAddress, {'attr': {'class': 'form-control', 'placeholder': 'Ville de départ'}}) }}
                 {{ form_errors(form.departureAddress) }}
             </div>
-            <div class="col-lg-4 col-md-12 col-sm-12 mb-3">
-                {# <label class="form-label text-primary"><i class="bi bi-geo-alt"></i> Ville d’arrivée</label> #}
+            <div class="col-12 col-md-6 col-lg-4">
                 {{ form_label(form.arrivalAddress, '📍 Ville d\'arrivée', {'label_attr': {'class': 'form-label text-primary'}}) }}
                 {{ form_widget(form.arrivalAddress, {'attr': {'class': 'form-control', 'placeholder': 'Ville d’arrivée'}}) }}
                 {{ form_errors(form.arrivalAddress) }}
             </div>
-            <div class="col-lg-4 col-md-12 col-sm-12 mb-3">
-                {# <label class="form-label text-primary"><i class="bi bi-calendar2-date"></i> Date</label> #}
+            <div class="col-12 col-md-6 col-lg-4">
                 {{ form_label(form.departureDate, '📅 Date de départ', {'label_attr': {'class': 'form-label text-primary'}}) }}
                 {{ form_widget(form.departureDate, {'attr': {'class': 'form-control'}}) }}
                 {{ form_errors(form.departureDate) }}
             </div>
 
-            <div class="d-flex gap-2 justify-content-md-center mb-4 mb-lg-3">
-                <button type="submit" class="btn btn-primary btn-lg px-4 me-md-6 fw-bold">
+            <div class="col-12 d-flex justify-content-center">
+                <button type="submit" class="btn btn-primary btn-lg fw-bold w-100 w-md-auto">
                     <i class="bi bi-search"></i> Rechercher
                 </button>
             </div>

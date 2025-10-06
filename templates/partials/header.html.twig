@@ -9,7 +9,7 @@
             <div class="collapse navbar-collapse" id="navbarColor02">
                 <ul class="navbar-nav m-auto gap-3">
                     <li class="nav-item">
-                        <a class="nav-link active" href="{{url('app_home')}}">Accueil
+                        <a class="nav-link" href="{{url('app_home')}}">Accueil
                             <span class="visually-hidden">(current)</span>
                         </a>
                     </li>
@@ -31,7 +31,9 @@
                             </li>
                         {% endif %}
                         {% if is_granted('ROLE_EMPLOYEE') %}
-                            <a href="{{ path('employee_dashboard') }}">Espace employé</a>
+                            <li class="nav-item">
+                                <a href="{{ path('employee_dashboard') }}">Espace employé</a>
+                            </li>
                         {% endif %}
 
                         <li class="nav-item">

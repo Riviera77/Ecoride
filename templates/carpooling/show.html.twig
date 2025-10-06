@@ -10,11 +10,16 @@
         <div class="card mb-4 overflow-hidden text-bg-dark shadow-lg">
             <div class="card-body">
 
-                <div class="d-flex align-items-center">
-                    <img src="{{ asset('uploads/users/' ~ carpooling.users.photo) }}" alt="photo" width="100" height="100" class="rounded-circle me-3">
+                <div class="d-flex align-items-center flex-wrap gap-3">
+                    <img src="{{ asset('uploads/users/' ~ carpooling.users.photo) }}" 
+                        alt="photo conducteur"
+                        class="rounded-circle img-fluid flex-shrink-0" 
+                        width="100" 
+                        height="100"
+                        style="object-fit: cover;">
                     <div>
-                        <h3>{{ carpooling.users.username }}</h3>
-                        <p>Note moyenne : 
+                        <h3 class="mb-1">{{ carpooling.users.username }}</h3>
+                        <p class="mb-0">Note moyenne : 
                             {% if averageRating > 0 %}
                                 ⭐ {{ averageRating }}/5
                             {% else %}
@@ -26,71 +31,80 @@
 
                 <hr>
 
-                <p><strong>Ville de départ :</strong> {{ carpooling.departureAddress }}</p>
-                <p><strong>Ville d'arrivée :</strong> {{ carpooling.arrivalAddress }}</p>
-                <p><strong>Date de départ :</strong> {{ carpooling.departureDate ? carpooling.departureDate|date('Y-m-d') : '' }}</p>
-                <p><strong>Date d'arrivée :</strong>{{ carpooling.arrivalDate ? carpooling.arrivalDate|date('Y-m-d') : '' }}</p>
-                
-                <p><strong>Heure de départ :</strong> {{ carpooling.departureTime ? carpooling.departureTime|date('H:i:s') : '' }}</p>
-                <p><strong>Heure d'arrivée :</strong> {{ carpooling.arrivalTime ? carpooling.arrivalTime|date('H:i:s') : '' }}</p>
-                <p><strong>Durée estimée :</strong> {{ carpooling.duration ?? 'Non précisée' }}</p>
-                <p><strong>Prix :</strong> {{ carpooling.price }} €</p>
-                <p><strong>Nombre de places restantes :</strong> {{ carpooling.numberSeats - carpooling.passengers|length }}</p>
-                <p><strong>Préférences :</strong> {{ carpooling.preference ?? 'Aucune' }}</p>
-                <p><strong>Statut :</strong> {{ carpooling.status }}</p>
+                <div class="row row-cols-1 row-cols-md-2 g-3">
+                    <div><strong>Ville de départ :</strong> {{ carpooling.departureAddress }}</div>
+                    <div><strong>Ville d'arrivée :</strong> {{ carpooling.arrivalAddress }}</div>
 
+                    <div><strong>Date de départ :</strong> {{ carpooling.departureDate ? carpooling.departureDate|date('Y-m-d') : '' }}</div>
+                    <div><strong>Date d'arrivée :</strong>{{ carpooling.arrivalDate ? carpooling.arrivalDate|date('Y-m-d') : '' }}</div>
+                    
+                    <div><strong>Heure de départ :</strong> {{ carpooling.departureTime ? carpooling.departureTime|date('H:i:s') : '' }}</div>
+                    <div><strong>Heure d'arrivée :</strong> {{ carpooling.arrivalTime ? carpooling.arrivalTime|date('H:i:s') : '' }}</div>
+                    
+                    <div><strong>Durée estimée :</strong> {{ carpooling.duration ?? 'Non précisée' }}</div>
+                    <div><strong>Prix :</strong> {{ carpooling.price }} €</div>
+                    
+                    <div><strong>Nombre de places restantes :</strong> {{ carpooling.numberSeats - carpooling.passengers|length }}</div>
+                    <div><strong>Préférences :</strong> {{ carpooling.preference ?? 'Aucune' }}</div>
+                    
+                    <div><strong>Statut :</strong> {{ carpooling.status }}</div>
+                </div>
+                
                 <hr>
 
                 <h4>Véhicule</h4>
                 {% if carpooling.cars %}
-                    <p><strong>Modèle :</strong> {{ carpooling.cars.model }}</p>
-                    <p><strong>Marque :</strong> {{ carpooling.cars.mark }}</p>
-                    <p><strong>Énergie :</strong> {{ carpooling.cars.energy ? '⚡ Électrique' : 'Essence/Diesel' }}</p>
+                    <div class="row row-cols-1 row-cols-md-3 g-2">
+                        <div><strong>Modèle :</strong> {{ carpooling.cars.model }}</div>
+                        <div><strong>Marque :</strong> {{ carpooling.cars.mark }}</div>
+                        <div><strong>Énergie :</strong> {{ carpooling.cars.energy ? '⚡ Électrique' : 'Essence/Diesel' }}</div>
+                    </div>
                 {% else %}
-                    <p>Pas de véhicule renseigné</p>
+                    <p class="mb-0">Pas de véhicule renseigné</p>
                 {% endif %}
 
                 <hr>
 
                 <h4>Commentaires des passagers</h4>
                 {% if comments is not empty %}
-                    <ul>
+                    <ul class="mb-0">
                         {% for comment in comments %}
                             <li>💬 {{ comment.comment }}</li>
                         {% endfor %}
                     </ul>
                 {% else %}
-                    <p>Aucun commentaire pour ce conducteur.</p>
+                    <p class="mb-0">Aucun commentaire pour ce conducteur.</p>
                 {% endif %}
-
             </div>
         </div>
 
-        <a href="{{ path('app_carpooling_index') }}" class="btn btn-primary">Retour à la liste des covoiturages</a>
-
-        {% if app.user %}
-            {% set alreadyPassenger = carpooling.passengers.contains(app.user) %}
-            {% if alreadyPassenger %}
-                <div class="alert alert-info mt-3">
-                    Vous participez déjà à ce covoiturage.
-                </div>
-            {% elseif carpooling.numberSeats > 0 %}
-                <a href="{{ path('app_carpooling_participate', { id: carpooling.id }) }}" class="btn btn-primary mt-3">
-                    Participer à ce covoiturage
-                </a>
-            {% else %}
-                <div class="alert alert-warning mt-3">
-                    Il n'y a plus de places disponibles.
-                </div>
+        <div class="d-flex flex-column flex-md-row gap-2">
+            <a href="{{ path('app_carpooling_index') }}" class="btn btn-outline-primary">Retour à la liste</a>
+            
+            {% if app.user %}
+                {% set alreadyPassenger = carpooling.passengers.contains(app.user) %}
+                {% if alreadyPassenger %}
+                    <div class="alert alert-info mt-3">
+                        Vous participez déjà à ce covoiturage.
+                    </div>
+                {% elseif carpooling.numberSeats > 0 %}
+                    <a href="{{ path('app_carpooling_participate', { id: carpooling.id }) }}" class="btn btn-primary mt-3">
+                        Participer à ce covoiturage
+                    </a>
+                {% else %}
+                    <div class="alert alert-warning mt-3">
+                        Il n'y a plus de places disponibles.
+                    </div>
+                {% endif %}
+                {% else %}
+                    <div class="card my-4 overflow-hidden text-bg-dark shadow-lg">
+                        <a href="{{ path('app_login') }}">Connectez-vous</a> ou 
+                        <a href="{{ path('app_register') }}">créez un compte</a> pour participer à ce covoiturage.
+                    </div>
             {% endif %}
-            {% else %}
-                <div class="card my-4 overflow-hidden text-bg-dark shadow-lg">
-                    <a href="{{ path('app_login') }}">Connectez-vous</a> ou 
-                    <a href="{{ path('app_register') }}">créez un compte</a> pour participer à ce covoiturage.
-                </div>
-        {% endif %}
 
-        <a href="{{ path('app_carpooling_edit', {'id': carpooling.id}) }}" class="btn btn-primary">Modifier</a>
+            <a href="{{ path('app_carpooling_edit', {'id': carpooling.id}) }}" class="btn btn-primary">Modifier</a>
+        </div>
     </div>
 
     {{ include('carpooling/_delete_form.html.twig') }}
